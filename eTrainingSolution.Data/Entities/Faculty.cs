@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace eTrainingSolution.Data.Entities
+﻿namespace eTrainingSolution.Data.Entities
 {
     public class Faculty
     {
@@ -29,9 +23,10 @@ namespace eTrainingSolution.Data.Entities
         /// </summary>
         public string CreatedBy { get; set; }
         /// <summary>
-        /// Khóa ngoại: ID trường
+        /// áp dụng cho fluent api
         /// </summary>
-        public Guid SchoolID { get; set; }
-        public School School { get; set;}
+        public School Schools { get; set; }
+
+        public ICollection<Classroom> Classrooms { get; set; }
     }
 }

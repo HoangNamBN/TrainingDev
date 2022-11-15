@@ -1,11 +1,6 @@
 ﻿using eTrainingSolution.Data.Configuration;
 using eTrainingSolution.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace eTrainingSolution.Data.EF
 {
@@ -35,7 +30,8 @@ namespace eTrainingSolution.Data.EF
         /// khai báo các entities
         /// </summary>
         public DbSet<School> Schools { get; set; }
-        public DbSet<Faculty> Facultys { get; set;}
+        public DbSet<Faculty> Facultys { get; set; }
         public DbSet<Classroom> Classrooms { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }

@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace eTrainingSolution.Data.Entities
+﻿namespace eTrainingSolution.Data.Entities
 {
     /// <summary>
     /// 1. attribute configuration [Table("Schools")] // Data Annotation
@@ -34,5 +27,6 @@ namespace eTrainingSolution.Data.Entities
         /// </summary>
         public int CapacityOfTheSchool { get; set; }
 
+        public ICollection<Faculty> Faculties { get; set; }
     }
 }
