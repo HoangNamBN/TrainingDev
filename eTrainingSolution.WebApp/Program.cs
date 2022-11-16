@@ -1,7 +1,46 @@
+﻿using eTrainingSolution.EntityFrameworkCore;
+using eTrainingSolution.EntityFrameworkCore.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// đăng ký eTrainingDbContext sử dụng kết nối đến SQL Server
+builder.Services.AddDbContext<eTrainingDbContext>(options =>
+{
+    string strConnect = builder.Configuration.GetConnectionString("eTrainingConnection");
+    options.UseSqlServer(strConnect, b => b.MigrationsAssembly("eTrainingSolution.DbMigrator"));
+});
+
+/*
+    Đăng ký các dịch vụ Identity với cấu hình mặc định cho User và Role
+    Thêm Token Provider để phát sinh mã token khi mà reset mật khẩu, confirm email, ...
+ */
+builder.Services.AddIdentity<User, Role>().AddEntityFrameworkStores<eTrainingDbContext>().AddDefaultTokenProviders();
+
+// truy cập IdentityOptions
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    // thiết lập về việc khóa User sau 5 lần đăng nhập thất bại
+    options.Lockout.DefaultLockoutTimeSpan= TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts=5;
+    options.Lockout.AllowedForNewUsers=true;
+
+    // thiết lập cấu hình cho Password
+    options.Password.RequiredLength=8; // số ký tự tối thiểu của password
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+
+    // thiết lập tên email là duy nhất
+    options.User.RequireUniqueEmail= true;
+
+    // cấu hình xác thực địa chỉ email tức là email phải tồn tại. Việc này áp dụng khi mà ngườ dùng đăng ký thì gửi mail kích hoạt, reset password thì gửi mail kích hoạt, ...
+    options.SignIn.RequireConfirmedEmail= true;
+});
 
 var app = builder.Build();
 
@@ -18,7 +57,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
+app.UseAuthentication(); // phục hồi thông tin đăng nhập (Xác thực)
+app.UseAuthorization(); // phục hồi thông tin về quyền của user
 
 app.MapControllerRoute(
     name: "default",
