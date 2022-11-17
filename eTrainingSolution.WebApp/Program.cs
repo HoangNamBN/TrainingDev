@@ -1,6 +1,7 @@
 ﻿using eTrainingSolution.EntityFrameworkCore;
 using eTrainingSolution.EntityFrameworkCore.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,12 +15,11 @@ builder.Services.AddDbContext<eTrainingDbContext>(options =>
     string strConnect = builder.Configuration.GetConnectionString("eTrainingConnection");
     options.UseSqlServer(strConnect, b => b.MigrationsAssembly("eTrainingSolution.DbMigrator"));
 });
-
 /*
     Đăng ký các dịch vụ Identity với cấu hình mặc định cho User và Role
     Thêm Token Provider để phát sinh mã token khi mà reset mật khẩu, confirm email, ...
  */
-builder.Services.AddIdentity<User, Role>().AddEntityFrameworkStores<eTrainingDbContext>().AddDefaultTokenProviders();
+builder.Services.AddIdentity<User, Role>().AddEntityFrameworkStores<eTrainingDbContext>().AddDefaultTokenProviders().AddDefaultUI();
 
 // truy cập IdentityOptions
 builder.Services.Configure<IdentityOptions>(options =>
@@ -41,6 +41,14 @@ builder.Services.Configure<IdentityOptions>(options =>
     // cấu hình xác thực địa chỉ email tức là email phải tồn tại. Việc này áp dụng khi mà ngườ dùng đăng ký thì gửi mail kích hoạt, reset password thì gửi mail kích hoạt, ...
     options.SignIn.RequireConfirmedEmail= true;
 });
+
+// thiết lập đường dẫn đến các trang
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/login/"; // thiết lập đường dẫn đến trang login
+});
+
+// đăng ký dịch vụ xác thực bằng Email
 
 var app = builder.Build();
 
