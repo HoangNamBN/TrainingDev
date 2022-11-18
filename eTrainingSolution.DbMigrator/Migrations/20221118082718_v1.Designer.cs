@@ -12,8 +12,8 @@ using eTrainingSolution.EntityFrameworkCore;
 namespace eTrainingSolution.DbMigrator.Migrations
 {
     [DbContext(typeof(eTrainingDbContext))]
-    [Migration("20221116070751_v0")]
-    partial class v0
+    [Migration("20221118082718_v1")]
+    partial class v1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -145,14 +145,13 @@ namespace eTrainingSolution.DbMigrator.Migrations
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<DateTime?>("CreateDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("FacultysID")
+                    b.Property<Guid?>("FacultysID")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ID");
@@ -171,11 +170,10 @@ namespace eTrainingSolution.DbMigrator.Migrations
                     b.Property<int>("CapacityOfFaculty")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<DateTime?>("CreateDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FacultyName")
@@ -183,7 +181,7 @@ namespace eTrainingSolution.DbMigrator.Migrations
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("SchoolsId")
+                    b.Property<Guid?>("SchoolsId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ID");
@@ -203,7 +201,6 @@ namespace eTrainingSolution.DbMigrator.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -231,13 +228,12 @@ namespace eTrainingSolution.DbMigrator.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CapacityOfTheSchool")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<DateTime?>("CreateDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("SchoolName")
@@ -258,25 +254,26 @@ namespace eTrainingSolution.DbMigrator.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<int>("AccountType")
+                        .HasColumnType("int");
+
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ClassroomsID")
+                    b.Property<Guid?>("ClassroomsID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<DateTime?>("CreateDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DateOfBirth")
+                    b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
@@ -287,10 +284,9 @@ namespace eTrainingSolution.DbMigrator.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FullName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDelete")
+                    b.Property<bool?>("IsDelete")
                         .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")
@@ -308,7 +304,6 @@ namespace eTrainingSolution.DbMigrator.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PasswordHash")
@@ -400,9 +395,7 @@ namespace eTrainingSolution.DbMigrator.Migrations
                 {
                     b.HasOne("eTrainingSolution.EntityFrameworkCore.Entities.Faculty", "Facultys")
                         .WithMany("Classrooms")
-                        .HasForeignKey("FacultysID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FacultysID");
 
                     b.Navigation("Facultys");
                 });
@@ -411,9 +404,7 @@ namespace eTrainingSolution.DbMigrator.Migrations
                 {
                     b.HasOne("eTrainingSolution.EntityFrameworkCore.Entities.School", "Schools")
                         .WithMany("Faculties")
-                        .HasForeignKey("SchoolsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SchoolsId");
 
                     b.Navigation("Schools");
                 });
@@ -422,9 +413,7 @@ namespace eTrainingSolution.DbMigrator.Migrations
                 {
                     b.HasOne("eTrainingSolution.EntityFrameworkCore.Entities.Classroom", "Classrooms")
                         .WithMany("Users")
-                        .HasForeignKey("ClassroomsID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ClassroomsID");
 
                     b.Navigation("Classrooms");
                 });
