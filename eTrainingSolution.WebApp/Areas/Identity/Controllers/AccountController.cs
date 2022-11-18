@@ -1,12 +1,15 @@
 ﻿using eTrainingSolution.EntityFrameworkCore.Entities;
-using eTrainingSolution.WebApp.Areas.Identity.Models;
+using eTrainingSolution.Shared;
+using eTrainingSolution.WebApp.Areas.Identity.Models.Account;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using MimeKit;
 using MimeKit.Cryptography;
+using NuGet.Protocol.Plugins;
 using System.Text;
 using System.Text.Encodings.Web;
 
@@ -40,7 +43,10 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             _logger = logger;
             _emailSender = emailSender;
         }
+        [BindProperty]
+        public RegisterConfirmModel registerConfirm { get; set; }
 
+        
         public string ReturnUrl { get; set; }
 
         /// <summary>
@@ -56,7 +62,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register(string returnUrl = null)
+        public IActionResult Register(string? returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
             ViewData["ReturnUrl"] = returnUrl;
@@ -78,7 +84,8 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             // Kiểm tra xem có trường thông tin nào không hợp lệ hay không xác thực
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = model.Email, Email = model.Email };
+                var userName = model.Email.Substring(0, model.Email.LastIndexOf('@'));
+                var user = new User { UserName = userName, Email = model.Email };
                 // trả về đối tượng IdentityResult
                 var result = await _userManager.CreateAsync(user, model.Password);
 
@@ -106,7 +113,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                     // if mà yêu cầu xác nhận tài khoản trước khi đăng nhập thì sẽ chuyển hướng sang trang RegisterConfirmation
                     if (_userManager.Options.SignIn.RequireConfirmedAccount) // mặc định giá trị của RequireConfirmedAccount là false
                     {
-                        return RedirectToPage("RigisterConfirmation", new { email = model.Email , returnUrl = returnUrl});
+                        return RedirectToAction("RegisterConfirmation", new { email = model.Email, returnUrl = returnUrl });
                     }
                     else
                     {
@@ -119,22 +126,96 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                 // đưa lỗi thêm user và ModelState để hiển thị ở html heleper
                 foreach(var error in result.Errors)
                 {
-                    // mô tả lỗi
+                    // thêm một message lỗi cụ thể vào danh sách Errors với 1 key
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
             return View(model);
         }
+
+        /// <summary>
+        /// Dẫn đến view RigisterConfirm để xác nhận đăng ký
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> RegisterConfirmation(string email, string? returnUrl)
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// confirm email
+        /// </summary>
+        /// <param name="userID"></param>
+        /// <param name="code"></param>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string userID, string code, string? returnUrl)
+        {
+            return View();
+        }
+
         #endregion
 
         #region Login
+        /// <summary>
+        /// gọi đến View login
+        /// </summary>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
         [HttpGet("/login/")]
         [AllowAnonymous]
-        public IActionResult Login(string returnUrl = null)
+        public IActionResult Login(string? returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
+
+        [HttpPost("/login")]
+        public async Task<IActionResult> Login(LoginModel loginModel, string? returnUrl = null)
+        {
+            returnUrl = returnUrl ?? Url.Content("~/");
+            ViewData["ReturnUrl"] = returnUrl;
+            if (_signInManager.IsSignedIn(User))
+            {
+                return Redirect("Index");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var resultLogin = await _signInManager.PasswordSignInAsync(
+                        loginModel.Email.Substring(0, loginModel.Email.LastIndexOf('@')), loginModel.Password, loginModel.RememberMe, lockoutOnFailure: true);
+
+                if (!resultLogin.Succeeded)
+                {
+                    var user = await _userManager.FindByEmailAsync(loginModel.Email);
+                    if (user != null)
+                    {
+                        resultLogin = await _signInManager.PasswordSignInAsync(user, loginModel.Password, loginModel.RememberMe, lockoutOnFailure: true);
+                    }
+                }
+                if (resultLogin.Succeeded)
+                {
+                    // ghi vào log là đã đăng nhập thành công
+                    _logger.LogInformation(loginModel.Email.Substring(0, loginModel.Email.LastIndexOf('@')) + "đã đăng nhập thành công");
+                    return Redirect(returnUrl);
+                }
+                if (resultLogin.IsLockedOut)
+                {
+                    _logger.LogWarning("Tài khoản của bạn đã bị xóa do sai quá 5 lần");
+                    return View("Lockout");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Không đăng nhập được");
+                    return View(loginModel);
+                }
+
+            }
+            return View(loginModel);
+        }
+
         #endregion
 
         #region truy cập bị từ chối
@@ -143,6 +224,23 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         public IActionResult AccessDenied()
         {
             return View();
+        }
+        #endregion
+
+        #region Logout
+        /// <summary>
+        /// Thực hiện hành động khi ấn vào button Logout
+        /// </summary>
+        /// <returns>Url:/Account/logout/</returns>
+        [HttpPost("/logout/")]
+        public async Task<IActionResult> Logout() {
+            // thực hiện gọi logout một cách đơn giản
+            await _signInManager.SignOutAsync();
+            // xóa cookie
+            Response.Cookies.Delete("aspToken");
+            _logger.LogInformation("Người dùng đã đăng xuất");
+            return RedirectToAction("Index", "Home", new {area = ""});
+
         }
         #endregion
     }
