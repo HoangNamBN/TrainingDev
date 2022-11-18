@@ -1,5 +1,4 @@
 ﻿using eTrainingSolution.EntityFrameworkCore.Entities;
-using eTrainingSolution.Shared;
 using eTrainingSolution.WebApp.Areas.Identity.Models.Account;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -7,9 +6,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using MimeKit;
-using MimeKit.Cryptography;
-using NuGet.Protocol.Plugins;
 using System.Text;
 using System.Text.Encodings.Web;
 
@@ -46,7 +42,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         [BindProperty]
         public RegisterConfirmModel registerConfirm { get; set; }
 
-        
+
         public string ReturnUrl { get; set; }
 
         /// <summary>
@@ -76,7 +72,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterModel model,string? returnUrl = null)
+        public async Task<IActionResult> Register(RegisterModel model, string? returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
             ViewData["ReturnUrl"] = returnUrl;
@@ -104,7 +100,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                     var callbackUrl = Url.Page(
                         // thiết lập gọi đến trang ConfirmEmail
                         "/Account/ConfirmEmail", pageHandler: null,
-                        values: new {area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl}, protocol: Request.Scheme);
+                        values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl }, protocol: Request.Scheme);
 
                     // gửi tới email của người dùng đã đăng ký
                     await _emailSender.SendEmailAsync(model.Email, "Xác thực địa chỉ Email",
@@ -124,7 +120,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                     }
                 }
                 // đưa lỗi thêm user và ModelState để hiển thị ở html heleper
-                foreach(var error in result.Errors)
+                foreach (var error in result.Errors)
                 {
                     // thêm một message lỗi cụ thể vào danh sách Errors với 1 key
                     ModelState.AddModelError(string.Empty, error.Description);
@@ -233,13 +229,14 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// </summary>
         /// <returns>Url:/Account/logout/</returns>
         [HttpPost("/logout/")]
-        public async Task<IActionResult> Logout() {
+        public async Task<IActionResult> Logout()
+        {
             // thực hiện gọi logout một cách đơn giản
             await _signInManager.SignOutAsync();
             // xóa cookie
             Response.Cookies.Delete("aspToken");
             _logger.LogInformation("Người dùng đã đăng xuất");
-            return RedirectToAction("Index", "Home", new {area = ""});
+            return RedirectToAction("Index", "Home", new { area = "" });
 
         }
         #endregion
