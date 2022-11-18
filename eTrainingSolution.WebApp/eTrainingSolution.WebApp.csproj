@@ -10,6 +10,9 @@
   <ItemGroup>
     <PackageReference Include="MailKit" Version="3.4.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.Extensions" Version="6.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -26,6 +29,7 @@
   <ItemGroup>
     <ProjectReference Include="..\eTrainingSolution.DbMigrator\eTrainingSolution.DbMigrator.csproj" />
     <ProjectReference Include="..\eTrainingSolution.EntityFrameworkCore\eTrainingSolution.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\eTrainingSolution.Shared\eTrainingSolution.Shared.csproj" />
   </ItemGroup>
 
 </Project>

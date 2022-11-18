@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eTrainingSolution.DbMigrato
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eTrainingSolution.EntityFrameworkCore", "eTrainingSolution.EntityFrameworkCore\eTrainingSolution.EntityFrameworkCore.csproj", "{72505085-C0FE-4E7B-9DC3-6D23732AC399}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eTrainingSolution.Shared", "eTrainingSolution.Shared\eTrainingSolution.Shared.csproj", "{FFE00F75-61F1-4B37-9674-9F16EB0CC12F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{72505085-C0FE-4E7B-9DC3-6D23732AC399}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72505085-C0FE-4E7B-9DC3-6D23732AC399}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72505085-C0FE-4E7B-9DC3-6D23732AC399}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFE00F75-61F1-4B37-9674-9F16EB0CC12F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFE00F75-61F1-4B37-9674-9F16EB0CC12F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFE00F75-61F1-4B37-9674-9F16EB0CC12F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFE00F75-61F1-4B37-9674-9F16EB0CC12F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
