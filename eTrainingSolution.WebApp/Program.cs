@@ -24,21 +24,21 @@ builder.Services.AddIdentity<User, Role>().AddEntityFrameworkStores<eTrainingDbC
 builder.Services.Configure<IdentityOptions>(options =>
 {
     // thiết lập về việc khóa User sau 5 lần đăng nhập thất bại
-    options.Lockout.DefaultLockoutTimeSpan= TimeSpan.FromMinutes(5);
-    options.Lockout.MaxFailedAccessAttempts=5;
-    options.Lockout.AllowedForNewUsers=true;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 3;
+    options.Lockout.AllowedForNewUsers = true;
 
     // thiết lập cấu hình cho Password
-    options.Password.RequiredLength=8; // số ký tự tối thiểu của password
+    options.Password.RequiredLength = 8; // số ký tự tối thiểu của password
     options.Password.RequireDigit = false;
     options.Password.RequireLowercase = false;
     options.Password.RequireUppercase = false;
 
     // thiết lập tên email là duy nhất
-    options.User.RequireUniqueEmail= true;
+    options.User.RequireUniqueEmail = true;
 
     // cấu hình xác thực địa chỉ email tức là email phải tồn tại. Việc này áp dụng khi mà ngườ dùng đăng ký thì gửi mail kích hoạt, reset password thì gửi mail kích hoạt, ...
-    options.SignIn.RequireConfirmedEmail= false;
+    options.SignIn.RequireConfirmedEmail = false;
     // khi đăng ký xong thì xác thực tài khoản
     options.SignIn.RequireConfirmedAccount = false;
 });
