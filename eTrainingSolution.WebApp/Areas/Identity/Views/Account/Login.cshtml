@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @using eTrainingSolution.EntityFrameworkCore.Entities;
-@using eTrainingSolution.WebApp.Areas.Identity.Models;
+@using eTrainingSolution.WebApp.Areas.Identity.Models.Account;
 
 @model LoginModel
 @inject SignInManager<User> SignInManager
@@ -17,30 +17,39 @@
             <div class="col-md-10">
                 <hr>
             </div>
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="LoginModel.Email" class="control-label"></label>
+                <label asp-for="Email" class="control-label"></label>
                 <div class="col-md-10">
-                    <input asp-for="LoginModel.Email" class="form-control" placeholder="Nhập Email"/>
-                    <span asp-validation-for="LoginModel.Email" class="text-danger"></span>
+                    <input asp-for="Email" name="Email" class="form-control" type="email"/>
+                    <span asp-validation-for="Email" name="Email" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="LoginModel.Password" class="control-label"></label>
+                <label asp-for="Password" class="control-label"></label>
                 <div class="col-md-10">
-                    <input asp-for="LoginModel.Password" class="form-control" placeholder="Nhập Password"/>
-                    <span asp-validation-for="LoginModel.Password" class="text-danger"></span>
+                    <input asp-for="Password" name="Password" class="form-control" type="password"/>
+                    <span asp-validation-for="Password" name="Password" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="LoginModel.Email" class="control-label"></label>
+                <div class="col-md-offset-2 col-md-10">
+                    <div class="checkbox">
+                        <input asp-for="RememberMe" id="RememberMe" name="RememberMe" type="checkbox" value="true" /> @Html.DisplayNameFor(m => m.RememberMe)
+                        <p>
+                            <a asp-action="ForgotPassword" asp-route-returnurl="@ViewData["ReturnUrl"]">Quên mật khẩu?</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
                 <div class="col-md-10">
                     <button type="submit" class="btn btn-primary">Đăng nhập</button>
+                    <a class="btn btn-danger" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">Đăng ký tài khoản mới</a>
                 </div>
             </div>
         </form>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-6 col-md-offset-2">
         <section>
             <h4>Đăng nhập bằng tài khoản</h4>
             <hr />
