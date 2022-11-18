@@ -1,4 +1,7 @@
-﻿namespace eTrainingSolution.EntityFrameworkCore.Entities
+﻿using eTrainingSolution.Shared;
+using System.ComponentModel.DataAnnotations;
+
+namespace eTrainingSolution.EntityFrameworkCore.Entities
 {
     /// <summary>
     /// 1. attribute configuration [Table("Schools")] // Data Annotation
@@ -13,18 +16,32 @@
         /// <summary>
         /// Tên trường học
         /// </summary>
-        public string SchoolName { get; set; }
+        [Required(ErrorMessage = "Bạn phải nhập tên trường")]
+        [Display(Name = "Tên trường")]
+        [StringLength(255, ErrorMessage = "Tên trường không được vượt quá 255 kí tự")]
+        public string? SchoolName { get; set; }
         /// <summary>
         /// địa điểm 
         /// </summary>
+        [Required(ErrorMessage = "Bạn phải nhập địa chỉ của trường học")]
+        [Display(Name = "Địa chỉ")]
+        [StringLength(255, ErrorMessage = "Địa chỉ không được vượt quá 255 kí tự")]
         public string? Address { get; set; }
         /// <summary>
         /// ngày thành lập
         /// </summary>
+        [Required(ErrorMessage = "Bạn phải nhập ngày thành lập")]
+        [Display(Name = "Ngày thành lập trường")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [ValidateCreateDate(ErrorMessage = "Ngày thành lập đang nhỏ hơn hoặc bằng ngày hiện tại")]
         public DateTime? CreateDate { get; set; }
         /// <summary>
         /// sức chứa của trường học
         /// </summary>
+        [Required(ErrorMessage = "Bạn cần nhập sức chứa của trường học")]
+        [Display(Name = "Số lượng học sinh tối đa")]
+        [Range(0, 1000, ErrorMessage = "Số lượng học sinh tôi đa chỉ được phép là 1000 học sinh")]
         public int CapacityOfTheSchool { get; set; }
 
         public ICollection<Faculty> Faculties { get; set; }
