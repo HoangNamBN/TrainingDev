@@ -10,7 +10,7 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
         /// <summary>
         /// mô tả
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
     }
 }

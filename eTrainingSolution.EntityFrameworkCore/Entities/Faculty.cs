@@ -17,15 +17,15 @@
         /// <summary>
         /// Ngày thành lập
         /// </summary>
-        public DateTime CreateDate { get; set; }
+        public DateTime? CreateDate { get; set; }
         /// <summary>
         /// Người tạo
         /// </summary>
-        public string CreatedBy { get; set; }
+        public string? CreatedBy { get; set; }
         /// <summary>
         /// áp dụng cho fluent api
         /// </summary>
-        public School Schools { get; set; }
+        public School? Schools { get; set; }
 
         public ICollection<Classroom> Classrooms { get; set; }
     }

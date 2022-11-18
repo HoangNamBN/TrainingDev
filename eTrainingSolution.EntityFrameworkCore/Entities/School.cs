@@ -17,11 +17,11 @@
         /// <summary>
         /// địa điểm 
         /// </summary>
-        public string Address { get; set; }
+        public string? Address { get; set; }
         /// <summary>
         /// ngày thành lập
         /// </summary>
-        public DateTime CreateDate { get; set; }
+        public DateTime? CreateDate { get; set; }
         /// <summary>
         /// sức chứa của trường học
         /// </summary>

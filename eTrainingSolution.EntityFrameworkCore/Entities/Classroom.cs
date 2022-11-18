@@ -17,12 +17,12 @@
         /// <summary>
         /// ngày thành lập
         /// </summary>
-        public DateTime CreateDate { get; set; }
+        public DateTime? CreateDate { get; set; }
         /// <summary>
         /// người tạo
         /// </summary>
-        public string CreatedBy { get; set; }
-        public Faculty Facultys { get; set; }
+        public string? CreatedBy { get; set; }
+        public Faculty? Facultys { get; set; }
         public ICollection<User> Users { get; set; }
     }
 }
