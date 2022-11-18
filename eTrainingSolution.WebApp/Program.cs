@@ -1,7 +1,6 @@
 ﻿using eTrainingSolution.EntityFrameworkCore;
 using eTrainingSolution.EntityFrameworkCore.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,13 +38,17 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.User.RequireUniqueEmail= true;
 
     // cấu hình xác thực địa chỉ email tức là email phải tồn tại. Việc này áp dụng khi mà ngườ dùng đăng ký thì gửi mail kích hoạt, reset password thì gửi mail kích hoạt, ...
-    options.SignIn.RequireConfirmedEmail= true;
+    options.SignIn.RequireConfirmedEmail= false;
+    // khi đăng ký xong thì xác thực tài khoản
+    options.SignIn.RequireConfirmedAccount = false;
 });
 
 // thiết lập đường dẫn đến các trang
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/login/"; // thiết lập đường dẫn đến trang login
+    options.LogoutPath = "/logout/"; // thiết lập đường dẫn để logout
+    options.AccessDeniedPath = "/Account/AccessDenied"; // thiết lập đường dẫn khi mà không có quyền truy cập
 });
 
 // đăng ký dịch vụ xác thực bằng Email
