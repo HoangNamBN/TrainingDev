@@ -183,6 +183,12 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                 var resultLogin = await _signInManager.PasswordSignInAsync(
                         loginModel.Email.Substring(0, loginModel.Email.LastIndexOf('@')), loginModel.Password, loginModel.RememberMe, lockoutOnFailure: true);
 
+                if (resultLogin.IsLockedOut)
+                {
+                    _logger.LogWarning("Tài khoản của bạn đã bị xóa do sai quá 5 lần");
+                    return View("Lockout");
+                }
+
                 if (!resultLogin.Succeeded)
                 {
                     var user = await _userManager.FindByEmailAsync(loginModel.Email);
@@ -197,21 +203,14 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                     _logger.LogInformation(loginModel.Email.Substring(0, loginModel.Email.LastIndexOf('@')) + "đã đăng nhập thành công");
                     return Redirect(returnUrl);
                 }
-                if (resultLogin.IsLockedOut)
-                {
-                    _logger.LogWarning("Tài khoản của bạn đã bị xóa do sai quá 5 lần");
-                    return View("Lockout");
-                }
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Không đăng nhập được");
                     return View(loginModel);
                 }
-
             }
             return View(loginModel);
         }
-
         #endregion
 
         #region truy cập bị từ chối
