@@ -1,0 +1,41 @@
+﻿@using eTrainingSolution.EntityFrameworkCore.Entities
+
+@model School
+
+@{
+    ViewData["Title"] = "Sửa thông tin trường học";
+}
+
+<h1>Thêm trường học mới</h1>
+<div class="row">
+    <div class="col-md-8">
+        <form asp-area="Identity" asp-controller="School" asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="SchoolName" class="control-label"></label>
+                <input asp-for="SchoolName" class="form-control" name="SchoolName" />
+                <span asp-validation-for="SchoolName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address" class="control-label"></label>
+                <input asp-for="Address" class="form-control" name="Address" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreateDate" class="control-label"></label>
+                <input asp-for="CreateDate" class="form-control" name="CreateDate" type="date" />
+                <span asp-validation-for="CreateDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CapacityOfTheSchool" class="control-label"></label>
+                <input asp-for="CapacityOfTheSchool" class="form-control" name="CapacityOfTheSchool" type="number" />
+                <span asp-validation-for="CapacityOfTheSchool" class="text-danger"></span>
+            </div>
+            <p></p>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" value="Create">Lưu lại</button>
+                <a asp-action="Index" class="btn btn-danger">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
