@@ -18,6 +18,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Models.Account
         /// </summary>
         [Required(ErrorMessage = "Bạn bắt buộc phải nhập thông tin {0}")]
         [DataType(DataType.Password)]
+        [StringLength(100, ErrorMessage = "{0} phải nhập từ {2} đến {1} kí tự !", MinimumLength = 8)]
         [Display(Name = "Password")]
         public string Password { get; set; }
 

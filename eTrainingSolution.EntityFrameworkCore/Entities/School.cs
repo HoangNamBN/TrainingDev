@@ -34,7 +34,7 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
         [Display(Name = "Ngày thành lập trường")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        [ValidateCreateDate(ErrorMessage = "Ngày thành lập đang nhỏ hơn hoặc bằng ngày hiện tại")]
+        [ValidateCreateDate(ErrorMessage = "Ngày đang chọn chưa đến")]
         public DateTime? CreateDate { get; set; }
         /// <summary>
         /// sức chứa của trường học
@@ -44,6 +44,6 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
         [Range(0, 1000, ErrorMessage = "Số lượng học sinh tôi đa chỉ được phép là 1000 học sinh")]
         public int CapacityOfTheSchool { get; set; }
 
-        public ICollection<Faculty> Faculties { get; set; }
+        public ICollection<Faculty>? Faculties { get; set; }
     }
 }
