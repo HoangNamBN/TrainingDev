@@ -5,8 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services to the container. => đăng ký hoạt động 
 builder.Services.AddControllersWithViews();
+
+// đăng ký các dịch vụ đến trang Razor
+builder.Services.AddRazorPages();
 
 // đăng ký eTrainingDbContext sử dụng kết nối đến SQL Server
 builder.Services.AddDbContext<eTrainingDbContext>(options =>
@@ -71,6 +74,7 @@ app.UseRouting();
 app.UseAuthentication(); // phục hồi thông tin đăng nhập (Xác thực)
 app.UseAuthorization(); // phục hồi thông tin về quyền của user
 
+// thực tế là tạo ra các EndPoint đến các controller để anahs xạ đến cơ sở dữ liệu
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

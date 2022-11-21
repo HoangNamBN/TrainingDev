@@ -130,30 +130,35 @@ namespace eTrainingSolution.DbMigrator.Migrations
 
             modelBuilder.Entity("eTrainingSolution.EntityFrameworkCore.Entities.Classroom", b =>
                 {
-                    b.Property<Guid>("ID")
+                    b.Property<Guid?>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ClassCapacity")
+                    b.Property<int?>("ClassCapacity")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("ClassName")
                         .IsRequired()
+                        .HasMaxLength(255)
                         .IsUnicode(true)
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime?>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                    b.Property<Guid?>("FacultysID")
+                    b.Property<Guid?>("FacultyID")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("FacultysID");
+                    b.HasIndex("FacultyID");
 
                     b.ToTable("Classes", (string)null);
                 });
@@ -164,26 +169,31 @@ namespace eTrainingSolution.DbMigrator.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CapacityOfFaculty")
+                    b.Property<int?>("CapacityOfFaculty")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("FacultyName")
                         .IsRequired()
+                        .HasMaxLength(255)
                         .IsUnicode(true)
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(255)");
 
-                    b.Property<Guid?>("SchoolsId")
+                    b.Property<Guid?>("SchoolID")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("SchoolsId");
+                    b.HasIndex("SchoolID");
 
                     b.ToTable("Faculty", (string)null);
                 });
@@ -395,7 +405,7 @@ namespace eTrainingSolution.DbMigrator.Migrations
                 {
                     b.HasOne("eTrainingSolution.EntityFrameworkCore.Entities.Faculty", "Facultys")
                         .WithMany("Classrooms")
-                        .HasForeignKey("FacultysID");
+                        .HasForeignKey("FacultyID");
 
                     b.Navigation("Facultys");
                 });
@@ -404,7 +414,7 @@ namespace eTrainingSolution.DbMigrator.Migrations
                 {
                     b.HasOne("eTrainingSolution.EntityFrameworkCore.Entities.School", "Schools")
                         .WithMany("Faculties")
-                        .HasForeignKey("SchoolsId");
+                        .HasForeignKey("SchoolID");
 
                     b.Navigation("Schools");
                 });
