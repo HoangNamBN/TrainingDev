@@ -51,7 +51,9 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null || _eTrainingDbContext.Schools == null)
+            {
                 return NotFound();
+            }    
             var school = await _eTrainingDbContext.Schools.FindAsync(id);
             if (school == null)
             {
@@ -89,19 +91,68 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null || _eTrainingDbContext.Schools == null) return NotFound();
+            if (id == null || _eTrainingDbContext.Schools == null)
+            {
+                return NotFound();
+            }
             var school = await _eTrainingDbContext.Schools.FirstOrDefaultAsync(m => m.Id == id);
-            if (school == null) return NotFound();
+            if (school == null)
+            {
+                return NotFound();
+            }
             return View(school);
         }
 
         [HttpGet]
         public async Task<IActionResult> View(Guid? id)
         {
-            if (id == null || _eTrainingDbContext.Schools == null) return NotFound();
+            if (id == null || _eTrainingDbContext.Schools == null)
+            {
+                return NotFound();
+            }
             var school = await _eTrainingDbContext.Schools.FirstOrDefaultAsync(m => m.Id == id);
-            if (school == null) return NotFound();
+            if (school == null)
+            {
+                return NotFound();
+            }
             return View(school);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(Guid? id)
+        {
+            if(id == null)
+            {
+                return NotFound();
+            }
+            if(_eTrainingDbContext.Schools == null)
+            {
+                return Problem("Entity set null");
+            }
+            // tìm kiếm thông tin trường học theo id
+            var schoolDbContext = await _eTrainingDbContext.Schools.FindAsync(id);
+            if( schoolDbContext != null)
+            {
+                // lấy ra danh sách các Khoa theo id trường học
+                var facultuesDb = await _eTrainingDbContext.Facultys.Where(m => m.SchoolID == id).ToListAsync();
+                if(facultuesDb != null)
+                {
+                    // Duyệt Khoa để lấy ra thông tin của lớp học
+                    foreach(var faculties in facultuesDb)
+                    {
+                        // lấy ra danh sách lớp của Khoa
+                        var classesDbContext =await _eTrainingDbContext.Classrooms.Where(m => m.FacultyID == faculties.ID).ToListAsync();
+                        if (classesDbContext != null)
+                        {
+                            _eTrainingDbContext.RemoveRange(classesDbContext);
+                        }
+                        _eTrainingDbContext.Remove(faculties);
+                    }
+                }
+                _eTrainingDbContext.Remove(schoolDbContext);
+            }
+            await _eTrainingDbContext.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }
