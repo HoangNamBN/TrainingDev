@@ -1,0 +1,36 @@
+﻿@using eTrainingSolution.EntityFrameworkCore.Entities;
+
+@model Faculty;
+
+@{
+    ViewData["Title"] = "Xóa thông tin của Khoa";
+}
+<h1>Xóa thông tin</h1>
+<p>Bạn chắc chắn muốn xóa thông tin Khoa đang chọn không?</p>
+
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr class="text-center text-white bg-black">
+            <th>@Html.DisplayNameFor(model => model.FacultyName)</th>
+            <th>@Html.DisplayNameFor(model => model.CapacityOfFaculty)</th>
+            <th>@Html.DisplayNameFor(model => model.CreateDate)</th>
+            <th>@Html.DisplayNameFor(model => model.CreatedBy)</th>
+            <th>Trường</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>@Html.DisplayFor(model => model.FacultyName)</td>
+            <td class="text-center">@Html.DisplayFor(model => model.CapacityOfFaculty)</td>
+            <td class="text-center">@Html.DisplayFor(model => model.CreateDate)</td>
+            <td>@Html.DisplayFor(model => model.CreatedBy)</td>
+            <td>@Html.DisplayFor(model => model.Schools.SchoolName)</td>
+        </tr>
+    </tbody>
+</table>
+<div>
+    <form asp-action="Delete">
+        <input type="submit" asp-route-id="@Model?.ID" class="btn btn-danger" value="Delete" />
+        <a asp-action="Index" class="btn btn-primary">Quay lại</a>
+    </form>
+</div>
