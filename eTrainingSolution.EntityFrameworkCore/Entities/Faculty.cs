@@ -1,4 +1,7 @@
-﻿namespace eTrainingSolution.EntityFrameworkCore.Entities
+﻿using eTrainingSolution.Shared;
+using System.ComponentModel.DataAnnotations;
+
+namespace eTrainingSolution.EntityFrameworkCore.Entities
 {
     public class Faculty
     {
@@ -6,27 +9,48 @@
         /// ID của Khoa
         /// </summary>
         public Guid ID { get; set; }
+
         /// <summary>
         /// Tên Khoa
         /// </summary>
-        public string FacultyName { get; set; }
+        [Required(ErrorMessage ="Bạn cần nhập tên Khoa")]
+        [Display(Name = "Khoa")]
+        [StringLength(255, ErrorMessage ="Tên Khoa không được vượt quá 255 kí tự")]        
+        public string? FacultyName { get; set; }
+
         /// <summary>
         /// Sức chứa của Khoa
         /// </summary>
-        public int CapacityOfFaculty { get; set; }
+        [Required(ErrorMessage ="Bạn cần nhập số lượng học sinh tối đa của Khoa")]
+        [Display(Name = "Số học sinh tối đa")]
+        [ValidateCapacityOfFaculty]
+        public int? CapacityOfFaculty { get; set; }
+
         /// <summary>
         /// Ngày thành lập
         /// </summary>
+        [Required(ErrorMessage ="Bạn cần nhập ngày lập của Khoa")]
+        [Display(Name ="Ngày thành lập")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString ="{0:yyyy-MM-dd}", ApplyFormatInEditMode =true)]
+        [ValidateCreateDate(ErrorMessage ="Ngày thành lập nhỏ hơn ngày hiện tại")]
         public DateTime? CreateDate { get; set; }
+
         /// <summary>
         /// Người tạo
         /// </summary>
+        [Required(ErrorMessage = "Bạn cần nhập người thành lập ra Khoa")]
+        [Display(Name = "Người thành lập")]
+        [StringLength(255, ErrorMessage = "Người thành lập không được vượt quá 255 kí tự")]
         public string? CreatedBy { get; set; }
+
         /// <summary>
         /// áp dụng cho fluent api
         /// </summary>
         public School? Schools { get; set; }
 
-        public ICollection<Classroom> Classrooms { get; set; }
+        [Display(Name = "Thuộc trường")]
+        public Guid? SchoolID { get; set; }
+        public ICollection<Classroom>? Classrooms { get; set; }
     }
 }

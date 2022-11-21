@@ -13,7 +13,7 @@ namespace eTrainingSolution.EntityFrameworkCore.Configuration
             // cấu hình khóa chính sẽ là thuộc tính ID
             builder.HasKey(x => x.ID);
             // bắt buộc trường ClassName phải nhập thông tin
-            builder.Property(x => x.FacultyName).IsRequired().IsUnicode();
+            builder.Property(x => x.FacultyName).IsRequired().IsUnicode(true);
             // cấu hình khóa ngoại
             builder.HasOne(x => x.Schools).WithMany(g => g.Faculties);
         }

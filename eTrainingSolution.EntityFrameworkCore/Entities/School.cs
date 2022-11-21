@@ -1,5 +1,4 @@
-﻿using eTrainingSolution.Shared;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace eTrainingSolution.EntityFrameworkCore.Entities
 {
@@ -17,7 +16,7 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
         /// Tên trường học
         /// </summary>
         [Required(ErrorMessage = "Bạn phải nhập tên trường")]
-        [Display(Name = "Tên trường")]
+        [Display(Name = "Trường")]
         [StringLength(255, ErrorMessage = "Tên trường không được vượt quá 255 kí tự")]
         public string? SchoolName { get; set; }
         /// <summary>
