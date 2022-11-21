@@ -12,7 +12,7 @@ using eTrainingSolution.EntityFrameworkCore;
 namespace eTrainingSolution.DbMigrator.Migrations
 {
     [DbContext(typeof(eTrainingDbContext))]
-    [Migration("20221118082718_v1")]
+    [Migration("20221121033040_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -133,23 +133,28 @@ namespace eTrainingSolution.DbMigrator.Migrations
 
             modelBuilder.Entity("eTrainingSolution.EntityFrameworkCore.Entities.Classroom", b =>
                 {
-                    b.Property<Guid>("ID")
+                    b.Property<Guid?>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ClassCapacity")
+                    b.Property<int?>("ClassCapacity")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("ClassName")
                         .IsRequired()
+                        .HasMaxLength(255)
                         .IsUnicode(true)
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime?>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<Guid?>("FacultysID")
                         .HasColumnType("uniqueidentifier");
@@ -163,23 +168,28 @@ namespace eTrainingSolution.DbMigrator.Migrations
 
             modelBuilder.Entity("eTrainingSolution.EntityFrameworkCore.Entities.Faculty", b =>
                 {
-                    b.Property<Guid>("ID")
+                    b.Property<Guid?>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CapacityOfFaculty")
+                    b.Property<int?>("CapacityOfFaculty")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("FacultyName")
                         .IsRequired()
+                        .HasMaxLength(255)
                         .IsUnicode(true)
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<Guid?>("SchoolsId")
                         .HasColumnType("uniqueidentifier");
@@ -223,17 +233,20 @@ namespace eTrainingSolution.DbMigrator.Migrations
 
             modelBuilder.Entity("eTrainingSolution.EntityFrameworkCore.Entities.School", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<int>("CapacityOfTheSchool")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<string>("SchoolName")

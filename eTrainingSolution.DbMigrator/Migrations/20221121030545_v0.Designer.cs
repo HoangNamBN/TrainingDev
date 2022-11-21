@@ -12,8 +12,8 @@ using eTrainingSolution.EntityFrameworkCore;
 namespace eTrainingSolution.DbMigrator.Migrations
 {
     [DbContext(typeof(eTrainingDbContext))]
-    [Migration("20221119052133_v3")]
-    partial class v3
+    [Migration("20221121030545_v0")]
+    partial class v0
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -142,14 +142,18 @@ namespace eTrainingSolution.DbMigrator.Migrations
 
                     b.Property<string>("ClassName")
                         .IsRequired()
+                        .HasMaxLength(255)
                         .IsUnicode(true)
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime?>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<Guid?>("FacultysID")
                         .HasColumnType("uniqueidentifier");
@@ -167,19 +171,24 @@ namespace eTrainingSolution.DbMigrator.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CapacityOfFaculty")
+                    b.Property<int?>("CapacityOfFaculty")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("FacultyName")
                         .IsRequired()
+                        .HasMaxLength(255)
                         .IsUnicode(true)
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<Guid?>("SchoolsId")
                         .HasColumnType("uniqueidentifier");
