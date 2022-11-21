@@ -9,18 +9,26 @@
 <h1>Thông tin của trường học</h1>
 
 <div>
-    <dl>
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.SchoolName)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.SchoolName)</dd>
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Address)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.Address)</dd>
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.CreateDate)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.CreateDate)</dd>
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.CapacityOfTheSchool)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.CapacityOfTheSchool)</dd>
-    </dl>
+    <table class="table table-bordered table-hover table-responsive">
+        <thead>
+            <tr class="text-center text-white bg-dark">
+                <th>@Html.DisplayNameFor(model => model.SchoolName)</th>
+                <th>@Html.DisplayNameFor(model => model.Address)</th>
+                <th>@Html.DisplayNameFor(model => model.CreateDate)</th>
+                <th>@Html.DisplayNameFor(model => model.CapacityOfTheSchool)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Html.DisplayFor(model => model.SchoolName)</td>
+                <td>@Html.DisplayFor(model => model.Address)</td>
+                <td class="text-center">@Html.DisplayFor(model => model.CreateDate)</td>
+                <td class="text-center">@Html.DisplayFor(model => model.CapacityOfTheSchool)</td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-secondary">Sửa</a>
+    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-danger">Sửa</a>
     <a asp-action="Index" class="btn btn-primary">Quay lại</a>
 </div>
