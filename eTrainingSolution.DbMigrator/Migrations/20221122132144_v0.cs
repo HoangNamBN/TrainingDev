@@ -16,7 +16,6 @@ namespace eTrainingSolution.DbMigrator.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -71,14 +70,14 @@ namespace eTrainingSolution.DbMigrator.Migrations
                     CapacityOfFaculty = table.Column<int>(type: "int", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    SchoolsId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    SchoolID = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Faculty", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Faculty_Schools_SchoolsId",
-                        column: x => x.SchoolsId,
+                        name: "FK_Faculty_Schools_SchoolID",
+                        column: x => x.SchoolID,
                         principalTable: "Schools",
                         principalColumn: "Id");
                 });
@@ -92,16 +91,22 @@ namespace eTrainingSolution.DbMigrator.Migrations
                     ClassCapacity = table.Column<int>(type: "int", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    FacultysID = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    FacultyID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    SchoolID = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Classes", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Classes_Faculty_FacultysID",
-                        column: x => x.FacultysID,
+                        name: "FK_Classes_Faculty_FacultyID",
+                        column: x => x.FacultyID,
                         principalTable: "Faculty",
                         principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_Classes_Schools_SchoolID",
+                        column: x => x.SchoolID,
+                        principalTable: "Schools",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -110,13 +115,13 @@ namespace eTrainingSolution.DbMigrator.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     AccountType = table.Column<int>(type: "int", nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FullName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     IsDelete = table.Column<bool>(type: "bit", nullable: true),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Password = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     ClassroomsID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -229,14 +234,19 @@ namespace eTrainingSolution.DbMigrator.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Classes_FacultysID",
+                name: "IX_Classes_FacultyID",
                 table: "Classes",
-                column: "FacultysID");
+                column: "FacultyID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Faculty_SchoolsId",
+                name: "IX_Classes_SchoolID",
+                table: "Classes",
+                column: "SchoolID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Faculty_SchoolID",
                 table: "Faculty",
-                column: "SchoolsId");
+                column: "SchoolID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleClaims_RoleId",

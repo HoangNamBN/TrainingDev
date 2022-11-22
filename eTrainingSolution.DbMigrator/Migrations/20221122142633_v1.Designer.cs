@@ -12,8 +12,8 @@ using eTrainingSolution.EntityFrameworkCore;
 namespace eTrainingSolution.DbMigrator.Migrations
 {
     [DbContext(typeof(eTrainingDbContext))]
-    [Migration("20221122104645_v13")]
-    partial class v13
+    [Migration("20221122142633_v1")]
+    partial class v1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,6 +34,10 @@ namespace eTrainingSolution.DbMigrator.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -50,6 +54,10 @@ namespace eTrainingSolution.DbMigrator.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("Roles", (string)null);
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityRole");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -357,6 +365,16 @@ namespace eTrainingSolution.DbMigrator.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("eTrainingSolution.EntityFrameworkCore.Entities.Role", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityRole");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasDiscriminator().HasValue("Role");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

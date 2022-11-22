@@ -5,13 +5,17 @@
 namespace eTrainingSolution.DbMigrator.Migrations
 {
     /// <inheritdoc />
-    public partial class v11 : Migration
+    public partial class v2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
                 name: "Description",
+                table: "Roles");
+
+            migrationBuilder.DropColumn(
+                name: "Discriminator",
                 table: "Roles");
         }
 
@@ -23,6 +27,13 @@ namespace eTrainingSolution.DbMigrator.Migrations
                 table: "Roles",
                 type: "nvarchar(max)",
                 nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "Discriminator",
+                table: "Roles",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
         }
     }
 }
