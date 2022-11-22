@@ -17,6 +17,7 @@
             <th>@Html.DisplayNameFor(model => model.CreateDate)</th>
             <th>@Html.DisplayNameFor(model => model.CreatedBy)</th>
             <th>Khoa</th>
+            <th>Trường</th>
         </tr>
     </thead>
     <tbody>
@@ -26,6 +27,7 @@
             <td class="text-center">@Html.DisplayFor(model => model.CreateDate)</td>
             <td>@Html.DisplayFor(model => model.CreatedBy)</td>
             <td>@Html.DisplayFor(model => model.Facultys.FacultyName)</td>
+            <td>@Html.DisplayFor(model => model.Schools.SchoolName)</td>
         </tr>
     </tbody>
 </table>

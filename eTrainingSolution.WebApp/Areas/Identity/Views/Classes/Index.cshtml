@@ -23,6 +23,7 @@
                     <th>@Html.DisplayNameFor(model => model.CreateDate)</th>
                     <th>@Html.DisplayNameFor(model => model.CreatedBy)</th>
                     <th>Khoa</th>
+                    <th>Trường</th>
                     <th>Chức năng khác</th>
                 </tr>
             </thead>
@@ -36,6 +37,7 @@
                         <td class="text-center">@Html.DisplayFor(ModelItem => item.CreateDate)</td>
                         <td>@Html.DisplayFor(ModelItem => item.CreatedBy)</td>
                         <td>@Html.DisplayFor(ModelItem => item.Facultys.FacultyName)</td>
+                        <td>@Html.DisplayFor(ModelItem => item.Schools.SchoolName)</td>
                         <td class="text-center">
                             <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.ID">Sửa</a>
                             <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.ID">Xóa</a>
@@ -56,6 +58,7 @@
                     <th>@Html.DisplayNameFor(model => model.CreateDate)</th>
                     <th>@Html.DisplayNameFor(model => model.CreatedBy)</th>
                     <th>Khoa</th>
+                    <th>Trường</th>
                 </tr>
             </thead>
         </table>

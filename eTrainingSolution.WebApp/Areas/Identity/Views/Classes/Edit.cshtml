@@ -36,6 +36,11 @@
                 <select asp-for="FacultyID" class="form-control" asp-items="ViewBag.FacultyID"></select>
                 <span class="text-danger" asp-validation-for="FacultyID"></span>
             </div>
+               <div class="form-group">
+                <label asp-for="SchoolID" class="control-label"></label>
+                <select asp-for="SchoolID" class="form-control" asp-items="ViewBag.SchoolID"></select>
+                <span class="text-danger" asp-validation-for="SchoolID"></span>
+            </div>
             <p></p>
             <div class="form-group">
                 <button type="submit" class="btn btn-primary" value="Edit">Save</button>
