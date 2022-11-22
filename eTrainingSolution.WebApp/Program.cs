@@ -21,7 +21,8 @@ builder.Services.AddDbContext<eTrainingDbContext>(options =>
     Đăng ký các dịch vụ Identity với cấu hình mặc định cho User và Role
     Thêm Token Provider để phát sinh mã token khi mà reset mật khẩu, confirm email, ...
  */
-builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<eTrainingDbContext>().AddDefaultTokenProviders().AddDefaultUI().AddRoles<IdentityRole>();
+builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<eTrainingDbContext>()
+    .AddDefaultTokenProviders().AddDefaultUI().AddRoles<IdentityRole>();
 // truy cập IdentityOptions
 builder.Services.Configure<IdentityOptions>(options =>
 {

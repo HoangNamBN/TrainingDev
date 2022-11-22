@@ -13,7 +13,7 @@ namespace eTrainingSolution.EntityFrameworkCore
     /// IdentityDbContext:
     ///     - có sẵn các bảng về Identity UserRoles, Roles, UserLogins, ...
     /// </summary>
-    public class eTrainingDbContext : IdentityDbContext<User>
+    public class eTrainingDbContext : IdentityDbContext<User, IdentityRole, string>
     {
         /// <summary>
         /// sử dụng để lưu và truy xuất cơ sở dữ liệu
@@ -61,6 +61,5 @@ namespace eTrainingSolution.EntityFrameworkCore
         public DbSet<Faculty> Facultys { get; set; }
         public DbSet<Classroom> Classrooms { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<Role> Roles { get; set; }
     }
 }
