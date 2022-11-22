@@ -1,4 +1,5 @@
-﻿using eTrainingSolution.Shared;
+﻿using eTrainingSolution.EntityFrameworkCore.Validation;
+using eTrainingSolution.Shared;
 using System.ComponentModel.DataAnnotations;
 
 namespace eTrainingSolution.EntityFrameworkCore.Entities
@@ -15,14 +16,16 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
         /// </summary>
         [Required(ErrorMessage ="Bạn cần nhập tên Khoa")]
         [Display(Name = "Khoa")]
-        [StringLength(255, ErrorMessage ="Tên Khoa không được vượt quá 255 kí tự")]        
+        [StringLength(255, ErrorMessage ="Tên Khoa không được vượt quá 255 kí tự")]
+        [ValidateFacultyNameIsUnicode] 
+        
         public string? FacultyName { get; set; }
 
         /// <summary>
         /// Sức chứa của Khoa
         /// </summary>
         [Required(ErrorMessage ="Bạn cần nhập số lượng học sinh tối đa của Khoa")]
-        [Display(Name = "Số học sinh tối đa")]
+        [Display(Name = "Số lượng học sinh")]
         [ValidateCapacityOfFaculty]
         public int? CapacityOfFaculty { get; set; }
 
@@ -49,7 +52,7 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
         /// </summary>
         public School? Schools { get; set; }
 
-        [Display(Name = "Thuộc trường")]
+        [Display(Name = "Trường")]
         public Guid? SchoolID { get; set; }
         public ICollection<Classroom>? Classrooms { get; set; }
     }

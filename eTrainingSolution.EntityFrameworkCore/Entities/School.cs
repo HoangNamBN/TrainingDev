@@ -12,6 +12,7 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
         /// School Id
         /// </summary>
         public Guid Id { get; set; }
+
         /// <summary>
         /// Tên trường học
         /// </summary>
@@ -19,6 +20,7 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
         [Display(Name = "Trường")]
         [StringLength(255, ErrorMessage = "Tên trường không được vượt quá 255 kí tự")]
         public string? SchoolName { get; set; }
+
         /// <summary>
         /// địa điểm 
         /// </summary>
@@ -26,6 +28,7 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
         [Display(Name = "Địa chỉ")]
         [StringLength(255, ErrorMessage = "Địa chỉ không được vượt quá 255 kí tự")]
         public string? Address { get; set; }
+
         /// <summary>
         /// ngày thành lập
         /// </summary>
@@ -35,6 +38,7 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [ValidateCreateDate(ErrorMessage = "Ngày đang chọn chưa đến")]
         public DateTime? CreateDate { get; set; }
+
         /// <summary>
         /// sức chứa của trường học
         /// </summary>
@@ -44,5 +48,6 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
         public int CapacityOfTheSchool { get; set; }
 
         public ICollection<Faculty>? Faculties { get; set; }
+        public ICollection<Classroom>? Classrooms { get; set; }
     }
 }
