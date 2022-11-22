@@ -1,5 +1,6 @@
 ﻿using eTrainingSolution.EntityFrameworkCore.Configuration;
 using eTrainingSolution.EntityFrameworkCore.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +13,7 @@ namespace eTrainingSolution.EntityFrameworkCore
     /// IdentityDbContext:
     ///     - có sẵn các bảng về Identity UserRoles, Roles, UserLogins, ...
     /// </summary>
-    public class eTrainingDbContext : IdentityDbContext<User, Role, string>
+    public class eTrainingDbContext : IdentityDbContext<User>
     {
         /// <summary>
         /// sử dụng để lưu và truy xuất cơ sở dữ liệu
