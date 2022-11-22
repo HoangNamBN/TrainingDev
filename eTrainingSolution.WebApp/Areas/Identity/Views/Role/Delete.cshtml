@@ -1,0 +1,24 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@model IdentityRole;
+
+@{
+    ViewData["Title"] = "Xóa vai trò của người dùng";
+}
+<h2>@ViewData["Title"]</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <p>Bạn có chắc chắc muốn xóa vai trò <strong>@Model.Name</strong></p>
+        <form method="post" asp-area="Identity" asp-controller="Role" asp-action="Delete">
+            <input type="hidden" asp-for="Id"/>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" value="Delete">Xóa</button>
+                <a class="btn btn-danger" asp-action="Index" asp-controller="Role">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
