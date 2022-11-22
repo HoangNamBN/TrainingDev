@@ -168,11 +168,18 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Thực hiện nhập các thông tin => đăng nhập
+        /// </summary>
+        /// <param name="loginModel">model chứa các thông tin được nhập vào</param>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
         [HttpPost("/login")]
         public async Task<IActionResult> Login(LoginModel loginModel, string? returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
             ViewData["ReturnUrl"] = returnUrl;
+            // Nếu người dùng đã login rồi thì trả về trang Index
             if (_signInManager.IsSignedIn(User))
             {
                 return Redirect("Index");
@@ -180,18 +187,23 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 
             if (ModelState.IsValid)
             {
+                // đặt lockoutOnFailure: true cho phép kích hoạt khóa tài khoản khi lỗi mật khẩu quá số lần
                 var resultLogin = await _signInManager.PasswordSignInAsync(
                         loginModel.Email.Substring(0, loginModel.Email.LastIndexOf('@')), loginModel.Password, loginModel.RememberMe, lockoutOnFailure: true);
 
+                // Nếu như tài khoản đăng nhập nhập sai quá 3 lần
                 if (resultLogin.IsLockedOut)
                 {
-                    _logger.LogWarning("Tài khoản của bạn đã bị xóa do sai quá 5 lần");
+                    _logger.LogWarning("Tài khoản của bạn đã bị xóa do sai quá 3 lần");
                     return View("Lockout");
                 }
 
+                // Nếu login không thành công
                 if (!resultLogin.Succeeded)
                 {
+                    // tìm thông tin user theo email
                     var user = await _userManager.FindByEmailAsync(loginModel.Email);
+                    //Nếu user tồn tại
                     if (user != null)
                     {
                         resultLogin = await _signInManager.PasswordSignInAsync(user, loginModel.Password, loginModel.RememberMe, lockoutOnFailure: true);
@@ -199,7 +211,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                 }
                 if (resultLogin.Succeeded)
                 {
-                    // ghi vào log là đã đăng nhập thành công
+                    // ghi vào log là đã đăng nhập thành công và Redire vào trang tương ứng
                     _logger.LogInformation(loginModel.Email.Substring(0, loginModel.Email.LastIndexOf('@')) + "đã đăng nhập thành công");
                     return Redirect(returnUrl);
                 }
@@ -226,7 +238,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// <summary>
         /// Thực hiện hành động khi ấn vào button Logout
         /// </summary>
-        /// <returns>Url:/Account/logout/</returns>
+        /// <returns>Url:Identity/Account/logout/</returns>
         [HttpPost("/logout/")]
         public async Task<IActionResult> Logout()
         {
