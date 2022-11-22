@@ -3,8 +3,8 @@
 @*Hiển thị thông báo*@
 @if (!String.IsNullOrEmpty(Model))
 {
-    var statusMessage = Model.StartsWith("Error") ? "danger" : "success";
-    <div class="alert alert-@statusMessage alert-dismissible" role="alert">
+    var StatusMessage = Model.StartsWith("Error") ? "danger" : "success";
+    <div class="alert alert-@StatusMessage  alert-dismissible" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         @Model
     </div>
