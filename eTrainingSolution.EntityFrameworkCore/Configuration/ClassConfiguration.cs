@@ -20,6 +20,7 @@ namespace eTrainingSolution.EntityFrameworkCore.Configuration
             builder.Property(x => x.ClassName).IsRequired(true).IsUnicode(true);
             // cấu hình khóa ngoại
             builder.HasOne(x => x.Facultys).WithMany(g => g.Classrooms);
+            builder.HasOne(x => x.Schools).WithMany(g => g.Classrooms);
         }
     }
 }
