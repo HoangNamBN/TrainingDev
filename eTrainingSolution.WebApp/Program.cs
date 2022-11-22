@@ -21,8 +21,7 @@ builder.Services.AddDbContext<eTrainingDbContext>(options =>
     Đăng ký các dịch vụ Identity với cấu hình mặc định cho User và Role
     Thêm Token Provider để phát sinh mã token khi mà reset mật khẩu, confirm email, ...
  */
-builder.Services.AddIdentity<User, Role>().AddEntityFrameworkStores<eTrainingDbContext>().AddDefaultTokenProviders().AddDefaultUI();
-
+builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<eTrainingDbContext>().AddDefaultTokenProviders().AddDefaultUI().AddRoles<IdentityRole>();
 // truy cập IdentityOptions
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -71,8 +70,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication(); // phục hồi thông tin đăng nhập (Xác thực)
-app.UseAuthorization(); // phục hồi thông tin về quyền của user
+app.UseAuthentication(); // Xac định danh tính => login, logout, ....
+app.UseAuthorization(); // xác thực quyền truy cập
+// Role-base authorization - xác thực quyền theo vai trò
 
 // thực tế là tạo ra các EndPoint đến các controller để anahs xạ đến cơ sở dữ liệu
 app.MapControllerRoute(
