@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using eTrainingSolution.EntityFrameworkCore.Validation.CreateDate;
+using System.ComponentModel.DataAnnotations;
 
 namespace eTrainingSolution.EntityFrameworkCore.Entities
 {

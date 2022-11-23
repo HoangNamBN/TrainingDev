@@ -1,4 +1,5 @@
-﻿using eTrainingSolution.EntityFrameworkCore.Validation;
+﻿using eTrainingSolution.EntityFrameworkCore.Validation.Classes;
+using eTrainingSolution.EntityFrameworkCore.Validation.CreateDate;
 using System.ComponentModel.DataAnnotations;
 
 namespace eTrainingSolution.EntityFrameworkCore.Entities
