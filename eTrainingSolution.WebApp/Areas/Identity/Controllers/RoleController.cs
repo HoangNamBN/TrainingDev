@@ -41,7 +41,6 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Roles = RoleType.Admin)]
         public async Task<IActionResult> Index()
         {
             var data = _roleManager.Roles.OrderBy(data => data.Name).ToList();
@@ -68,7 +67,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> CreateAsync(AddRoleModel modelRole)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var newRole = new IdentityRole(modelRole.RoleName);
                 var result = await _roleManager.CreateAsync(newRole);
@@ -88,7 +87,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 
         #region Xóa role
 
-        [Authorize(Roles =RoleType.Admin)]
+        [Authorize(Roles = RoleType.Admin)]
         [HttpGet("{roleid}")]
         public async Task<IActionResult> DeleteAsync(string roleID)
         {

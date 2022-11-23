@@ -71,7 +71,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             if (id == null || _eTrainingDbContext.Schools == null)
             {
                 return NotFound();
-            }    
+            }
             var school = await _eTrainingDbContext.Schools.FindAsync(id);
             if (school == null)
             {
