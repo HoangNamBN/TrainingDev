@@ -12,7 +12,7 @@ using eTrainingSolution.EntityFrameworkCore;
 namespace eTrainingSolution.DbMigrator.Migrations
 {
     [DbContext(typeof(eTrainingDbContext))]
-    [Migration("20221123010431_v0")]
+    [Migration("20221123144140_v0")]
     partial class v0
     {
         /// <inheritdoc />
