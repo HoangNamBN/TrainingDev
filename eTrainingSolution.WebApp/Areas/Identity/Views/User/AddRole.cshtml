@@ -1,0 +1,41 @@
+﻿@using eTrainingSolution.WebApp.Areas.Identity.Models.Users;
+
+@model AddRoleForUser;
+
+@{
+    ViewData["Title"] = "Gán vai trò cho user";
+}
+
+<h4>Gán quyền cho: @Model.user.UserName</h4>
+
+@if(@ViewBag.isSuccess == false)
+{
+    <h5 class="text-danger">Bạn không thể thiết lập quyền là Admin</h5>
+}
+
+
+<div class="row">
+    <div class="col-md-6">
+        <form method="post" id="set">
+            <div class="form-group">
+                <label asp-for="RoleNames"></label>
+                @*
+                    Tạo ra ListFor cho các thuộc tính của Model, phần tử thứ 2 là chứa các role cho phép chọn
+                *@
+                @Html.ListBoxFor(m => m.RoleNames, (IEnumerable<SelectListItem>)ViewBag.allRoles, new {
+                    id = "id-select-roles",
+                    @class="w-100"
+                })
+                <span asp-validation-for="RoleNames" class="text-danger"></span>
+            </div>
+            <p></p>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" value="Update">Cập nhật</button>
+                <a class="btn btn-secondary" asp-action="Index" asp-controller="Role">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

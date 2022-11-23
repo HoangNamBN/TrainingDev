@@ -1,0 +1,61 @@
+﻿@using eTrainingSolution.WebApp.Areas.Identity.Models.Page;
+@using eTrainingSolution.WebApp.Areas.Identity.Models.Users;
+
+@model UserModel
+
+@{
+    ViewData["Title"] = "Danh sách người dùng";
+}
+
+<h2>Cập nhật quyền sử dụng</h2>
+<p>Số lượng người dùng: @Model.totalUser</p>
+
+<table class="table table-active table-bordered table-hover">
+    <tr class=" bg-black text-white text-center">
+        <th> Người dùng </th>
+        <th> Email </th>
+        <th> Quyền sử dụng </th>
+        <th> Tác vụ </th>
+    </tr>
+    @{
+        if (Model != null)
+        {
+            @foreach (var user in Model.users)
+            {
+                <tr>
+                    <td><p>@user.UserName</p></td>
+                    <td><p>@user.Email</p></td>
+                    
+                    @{
+                        if (string.IsNullOrEmpty(user.RoleName))
+                        {
+                            <td class="text-center">
+                                <a class="btn btn-success btn-sm" asp-action="AddRole" asp-route-id="@user.Id">Thêm mới</a>
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                <p>@user.RoleName</p>
+                            </td>
+                        }
+                    }
+              
+                    <td class="text-center">
+                        <a class="btn btn-danger btn-sm" asp-action="AddRole" asp-route-id="@user.Id">Cập nhật</a>
+                        <a class="btn btn-secondary btn-sm" asp-action="Index" asp-controller="Role">Danh sách role</a>
+                    </td>
+                </tr>
+            }
+        }
+    }
+</table>
+@{
+    var pagingModel = new PagingModel
+    {
+        currentPage = Model.currentPage,
+        CountPage = Model.countPages,
+        GenerateUrl = (int? p) => Url.Action("Index", new { p = p })
+    };
+}
+<partial name="_PagingXTL" model="@pagingModel"></partial>
