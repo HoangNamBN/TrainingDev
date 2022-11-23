@@ -1,4 +1,6 @@
-﻿using eTrainingSolution.EntityFrameworkCore.Entities;
+﻿using eTrainingSolution.EntityFrameworkCore;
+using eTrainingSolution.EntityFrameworkCore.Entities;
+using eTrainingSolution.Shared;
 using eTrainingSolution.WebApp.Areas.Identity.Models.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -25,6 +27,8 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         private readonly UserManager<User> _userManager;
         private readonly ILogger<AccountController> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly eTrainingDbContext _eTrainingDbContext;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         /// <summary>
         /// đăng kí các dịch vụ
@@ -33,12 +37,16 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// <param name="userManager">Quản lý việc thêm sửa xóa tài khoản</param>
         /// <param name="logger">Viết ra log</param>
         /// <param name="emailSender">dùng để xác thực email</param>
-        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, ILogger<AccountController> logger, IEmailSender emailSender)
+        public AccountController(SignInManager<User> signInManager,
+            UserManager<User> userManager, ILogger<AccountController> logger,
+            IEmailSender emailSender, eTrainingDbContext eTrainingDbContext, RoleManager<IdentityRole> roleManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
             _emailSender = emailSender;
+            _eTrainingDbContext = eTrainingDbContext;
+            _roleManager = roleManager;
         }
         #endregion
 
@@ -50,7 +58,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// <returns></returns>
         [HttpGet]
         // cho phép người dùng user không cần đăng nhâp cũng truy cập được action này
-        [AllowAnonymous] 
+        [AllowAnonymous]
         public IActionResult Register(string? returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
@@ -77,13 +85,23 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             if (ModelState.IsValid)
             {
                 var userName = model.Email.Substring(0, model.Email.LastIndexOf('@'));
+
+                // lấy danh sách user
                 var user = new User { UserName = userName, Email = model.Email };
                 // trả về đối tượng IdentityResult
                 var result = await _userManager.CreateAsync(user, model.Password);
+                var listUsers = _eTrainingDbContext.Users?.ToList() ?? new List<User>();
+
 
                 // Nếu mà thêm thành công
                 if (result.Succeeded)
                 {
+                    if (listUsers.Count == 1)
+                    {
+                        // check xem các Role Admin, User, Student, Teacher đã tồn tại hay chưa
+                        await _roleManager.CreateAsync(new IdentityRole(RoleType.Admin));
+                        await _userManager.AddToRoleAsync(user, RoleType.Admin);
+                    }
                     _logger.LogInformation("Đã tạo user mới!");
 
                     // phát sinh Token dựa theo thông tin của User để xác thực Email
