@@ -1,9 +1,11 @@
 ﻿using eTrainingSolution.EntityFrameworkCore;
 using eTrainingSolution.EntityFrameworkCore.Entities;
+using eTrainingSolution.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using NuGet.Protocol.Plugins;
+using System.Data;
 
 namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 {
@@ -11,12 +13,18 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
     [Route("/Faculty/[action]")]
     public class FacultyController : Controller
     {
+        #region Khai báo dbContext sử dụng
+
         private readonly eTrainingDbContext _eTrainingDbContext;
 
         public FacultyController(eTrainingDbContext eTrainingDbContext)
         {
             _eTrainingDbContext = eTrainingDbContext;
         }
+
+        #endregion
+
+        #region Index
 
         [HttpGet]
         public async Task<IActionResult> Index()
@@ -30,6 +38,11 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             return View(await eTrainDbContext.ToListAsync());
         }
 
+        #endregion
+
+        #region Tạo mới một Khoa
+
+        [Authorize(Roles = RoleType.Admin)]
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -43,6 +56,8 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// <param name="faculty"></param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Roles = RoleType.Admin)]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Create([Bind("ID, FacultyName, CapacityOfFaculty, CreateDate, CreatedBy, SchoolID")] Faculty faculty)
         {
             if(ModelState.IsValid)
@@ -55,6 +70,10 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             ViewData["SchoolID"] = new SelectList(_eTrainingDbContext.Schools, "Id", "SchoolName", faculty.SchoolID);
             return View(faculty);
         }
+
+        #endregion
+
+        #region Xem thông tin của Khoa
 
         [HttpGet]
         public async Task<IActionResult> View(Guid? id)
@@ -72,6 +91,11 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             return View(faculitiesDbContext);
         }
 
+        #endregion
+
+        #region Sửa thông tin Khoa
+
+        [Authorize(Roles = RoleType.Admin)]
         [HttpGet]
         public async Task<IActionResult> Edit(Guid? id)
         {
@@ -90,6 +114,8 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = RoleType.Admin)]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Edit(Guid? id, [Bind("ID, FacultyName, CapacityOfFaculty, CreateDate, CreatedBy, SchoolID")] Faculty faculty)
         {
             if (id == null || id != faculty.ID)
@@ -114,8 +140,12 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             return View(faculty);
         }
 
+        #endregion
+
+        #region Xóa thông tin của Khoa
 
         [HttpGet]
+        [Authorize(Roles = RoleType.Admin)]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if(id == null)
@@ -131,6 +161,8 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = RoleType.Admin)]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid? id)
         {
             if(id == null)
@@ -156,5 +188,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             await _eTrainingDbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        #endregion
     }
 }

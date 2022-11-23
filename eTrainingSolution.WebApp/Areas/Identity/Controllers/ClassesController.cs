@@ -1,5 +1,7 @@
 ﻿using eTrainingSolution.EntityFrameworkCore;
 using eTrainingSolution.EntityFrameworkCore.Entities;
+using eTrainingSolution.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,11 +12,17 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
     [Route("/Classes/[action]")]
     public class ClassesController : Controller
     {
+        #region Khai báo dbContext sử dụng
+
         private readonly eTrainingDbContext _eTrainingDbContext;
 
         public ClassesController(eTrainingDbContext eTrainingDbContext) { 
             _eTrainingDbContext = eTrainingDbContext;
         }
+
+        #endregion
+
+        #region Index
 
         [HttpGet]
         public async Task<IActionResult> Index()
@@ -24,6 +32,10 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             return View(await classesDbContext.ToListAsync());
         }
 
+        #endregion
+
+        #region Create Class
+
         /// <summary>
         /// Nghiệp vụ: 
         ///     - Chuyển hướng sang form Detail là Tạo mới
@@ -31,6 +43,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Roles =RoleType.Admin)]
         public async Task<IActionResult> Create()
         {
             // lấy dữ liệu từ Controller chuyển sang cho View
@@ -49,6 +62,8 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// <param name="classes"></param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Roles = RoleType.Admin)]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Create([Bind("ID, ClassName, ClassCapacity, CreateDate, CreatedBy, FacultyID, SchoolID")] Classroom classes)
         {
             // check kiểm tra xem giá trị của các trường thông tin có là hợp lệ hay không
@@ -64,6 +79,10 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             ViewData["SchoolID"] = new SelectList(_eTrainingDbContext.Schools, "Id", "SchoolName", classes.SchoolID);
             return View(classes);
         }
+
+        #endregion
+
+        #region View thông tin
 
         [HttpGet]
         public async Task<IActionResult> View(Guid? id)
@@ -82,7 +101,12 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             return View(classDb);
         }
 
+        #endregion
+
+        #region Sửa thông tin Class
+
         [HttpGet]
+        [Authorize(Roles = RoleType.Admin)]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if(id == null || _eTrainingDbContext.Classrooms == null)
@@ -107,6 +131,8 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// <param name="classes"></param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Roles = RoleType.Admin)]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Edit(Guid? id, 
             [Bind("ID, ClassName, ClassCapacity, CreateDate, CreatedBy, FacultyID, SchoolID")] Classroom classes)
         {
@@ -135,7 +161,12 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             return View(classes);
         }
 
+        #endregion
+
+        #region Xóa thông tin Class
+
         [HttpGet]
+        [Authorize(Roles = RoleType.Admin)]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if(id == null || _eTrainingDbContext.Classrooms == null)
@@ -157,6 +188,8 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// <param name="id">id của lớp muốn xóa</param>
         /// <returns></returns>
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = RoleType.Admin)]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid? id)
         {
             if (id == null)
@@ -178,5 +211,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             await _eTrainingDbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        #endregion
     }
 }

@@ -1,6 +1,5 @@
 ﻿using eTrainingSolution.EntityFrameworkCore.Entities;
 using eTrainingSolution.WebApp.Areas.Identity.Models.Account;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -20,6 +19,8 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
     [Route("/Account/[action]")]
     public class AccountController : Controller
     {
+        #region Khai báo các dịch vụ sử dụng
+
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly ILogger<AccountController> _logger;
@@ -39,16 +40,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             _logger = logger;
             _emailSender = emailSender;
         }
-        [BindProperty]
-        public RegisterConfirmModel registerConfirm { get; set; }
-
-
-        public string ReturnUrl { get; set; }
-
-        /// <summary>
-        /// xác thực từ dịch vụ bên ngoài như google, facebook, ...
-        /// </summary>
-        public IList<AuthenticationScheme> ExternalLogin { get; set; }
+        #endregion
 
         #region Register
         /// <summary>
@@ -57,7 +49,8 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// <param name="returnUrl"></param>
         /// <returns></returns>
         [HttpGet]
-        [AllowAnonymous]
+        // cho phép người dùng user không cần đăng nhâp cũng truy cập được action này
+        [AllowAnonymous] 
         public IActionResult Register(string? returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
@@ -72,6 +65,9 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
+        // chống giả mạo một request không phải từ chính website
+        // cơ chế là khi gửi request Post lên nó sẽ kiểm tra token có tồn tại hay không. Nếu cookie bị thiếu hoặc giá trị không đúng thị nó sẽ không xử lý request này
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterModel model, string? returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
@@ -155,6 +151,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         #endregion
 
         #region Login
+
         /// <summary>
         /// gọi đến View login
         /// </summary>
@@ -174,7 +171,9 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// <param name="loginModel">model chứa các thông tin được nhập vào</param>
         /// <param name="returnUrl"></param>
         /// <returns></returns>
-        [HttpPost("/login")]
+        [HttpPost("/login/")]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginModel loginModel, string? returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
@@ -225,7 +224,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         }
         #endregion
 
-        #region truy cập bị từ chối
+        #region Truy cập bị từ chối
         [AllowAnonymous]
         [HttpGet]
         public IActionResult AccessDenied()
@@ -240,6 +239,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// </summary>
         /// <returns>Url:Identity/Account/logout/</returns>
         [HttpPost("/logout/")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             // thực hiện gọi logout một cách đơn giản

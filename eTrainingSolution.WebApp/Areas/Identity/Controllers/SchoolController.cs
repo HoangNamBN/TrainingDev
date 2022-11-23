@@ -1,7 +1,10 @@
 ﻿using eTrainingSolution.EntityFrameworkCore;
 using eTrainingSolution.EntityFrameworkCore.Entities;
+using eTrainingSolution.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 {
@@ -9,6 +12,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
     [Route("/School/[action]")]
     public class SchoolController : Controller
     {
+        #region Khai báo dbContext
 
         private readonly eTrainingDbContext _eTrainingDbContext;
 
@@ -17,6 +21,9 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             _eTrainingDbContext = eTrainingDbContext;
         }
 
+        #endregion
+
+        #region Index
         /// <summary>
         /// Sự kiện khi click vào School trên menu
         /// </summary>
@@ -27,14 +34,20 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             // sử dụng toán tử 2 ngôi. Nếu mà không null thì trả về danh sách
             return _eTrainingDbContext.Schools != null ? View(await _eTrainingDbContext.Schools.ToListAsync()) : Problem("null");
         }
+        #endregion
+
+        #region Create School
 
         [HttpGet]
+        [Authorize(Roles = RoleType.Admin)]
         public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = RoleType.Admin)]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Create([Bind("Id, SchoolName, Address, CreateDate, CapacityOfTheSchool")] School school)
         {
             if (ModelState.IsValid)
@@ -47,7 +60,12 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             return View(school);
         }
 
+        #endregion
+
+        #region Edit School
+
         [HttpGet]
+        [Authorize(Roles = RoleType.Admin)]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null || _eTrainingDbContext.Schools == null)
@@ -63,6 +81,8 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = RoleType.Admin)]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id, SchoolName, Address, CreateDate, CapacityOfTheSchool")] School school)
         {
             if (id != school.Id)
@@ -87,8 +107,12 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             return View(school);
         }
 
+        #endregion
+
+        #region Delete School
 
         [HttpGet]
+        [Authorize(Roles = RoleType.Admin)]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null || _eTrainingDbContext.Schools == null)
@@ -102,6 +126,46 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             }
             return View(school);
         }
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(Guid? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            if (_eTrainingDbContext.Schools == null)
+            {
+                return Problem("Entity set null");
+            }
+            // tìm kiếm thông tin trường học theo id
+            var schoolDbContext = await _eTrainingDbContext.Schools.FindAsync(id);
+            if (schoolDbContext != null)
+            {
+                // lấy ra danh sách các Khoa theo id trường học
+                var facultuesDb = await _eTrainingDbContext.Facultys.Where(m => m.SchoolID == id).ToListAsync();
+                if (facultuesDb != null)
+                {
+                    // Duyệt Khoa để lấy ra thông tin của lớp học
+                    foreach (var faculties in facultuesDb)
+                    {
+                        // lấy ra danh sách lớp của Khoa
+                        var classesDbContext = await _eTrainingDbContext.Classrooms.Where(m => m.FacultyID == faculties.ID).ToListAsync();
+                        if (classesDbContext != null)
+                        {
+                            _eTrainingDbContext.RemoveRange(classesDbContext);
+                        }
+                        _eTrainingDbContext.Remove(faculties);
+                    }
+                }
+                _eTrainingDbContext.Remove(schoolDbContext);
+            }
+            await _eTrainingDbContext.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        #endregion
+
+        #region View thông tin
 
         [HttpGet]
         public async Task<IActionResult> View(Guid? id)
@@ -118,41 +182,6 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             return View(school);
         }
 
-        [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(Guid? id)
-        {
-            if(id == null)
-            {
-                return NotFound();
-            }
-            if(_eTrainingDbContext.Schools == null)
-            {
-                return Problem("Entity set null");
-            }
-            // tìm kiếm thông tin trường học theo id
-            var schoolDbContext = await _eTrainingDbContext.Schools.FindAsync(id);
-            if( schoolDbContext != null)
-            {
-                // lấy ra danh sách các Khoa theo id trường học
-                var facultuesDb = await _eTrainingDbContext.Facultys.Where(m => m.SchoolID == id).ToListAsync();
-                if(facultuesDb != null)
-                {
-                    // Duyệt Khoa để lấy ra thông tin của lớp học
-                    foreach(var faculties in facultuesDb)
-                    {
-                        // lấy ra danh sách lớp của Khoa
-                        var classesDbContext =await _eTrainingDbContext.Classrooms.Where(m => m.FacultyID == faculties.ID).ToListAsync();
-                        if (classesDbContext != null)
-                        {
-                            _eTrainingDbContext.RemoveRange(classesDbContext);
-                        }
-                        _eTrainingDbContext.Remove(faculties);
-                    }
-                }
-                _eTrainingDbContext.Remove(schoolDbContext);
-            }
-            await _eTrainingDbContext.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+        #endregion
     }
 }
