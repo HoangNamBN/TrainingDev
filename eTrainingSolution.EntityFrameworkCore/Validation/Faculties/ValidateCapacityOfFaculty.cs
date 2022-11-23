@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography.X509Certificates;
+using eTrainingSolution.EntityFrameworkCore.Entities;
 
-namespace eTrainingSolution.EntityFrameworkCore.Entities
+namespace eTrainingSolution.EntityFrameworkCore.Validation.Faculties
 {
     public class ValidateCapacityOfFaculty : ValidationAttribute
     {
@@ -31,7 +31,7 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
             }
 
             // Nếu như mà chưa chọn trường  học
-            if(capacityOfFaculty.SchoolID == null)
+            if (capacityOfFaculty.SchoolID == null)
             {
                 return new ValidationResult("Bạn chưa chọn trường");
             }
@@ -46,9 +46,9 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
             // tính số lượng sinh viên mà Khoa có thể đăng ký được tại trường đã đăng ký
             var capacticy_Subtraction = capcityOfSchool - sum_capacticyOfFaculty;
 
-            if(capacticy_Subtraction > 0)
+            if (capacticy_Subtraction > 0)
             {
-                return (capacityOfFaculty?.CapacityOfFaculty > capacticy_Subtraction) ? new ValidationResult($"Trường còn đủ chỗ cho {(int)capacticy_Subtraction} học sinh") : ValidationResult.Success;
+                return capacityOfFaculty?.CapacityOfFaculty > capacticy_Subtraction ? new ValidationResult($"Trường còn đủ chỗ cho {(int)capacticy_Subtraction} học sinh") : ValidationResult.Success;
             }
             return new ValidationResult("Trường đã đủ 1000 học sinh");
         }

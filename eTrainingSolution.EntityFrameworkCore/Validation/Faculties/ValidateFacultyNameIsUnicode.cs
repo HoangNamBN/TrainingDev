@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace eTrainingSolution.EntityFrameworkCore.Validation
+namespace eTrainingSolution.EntityFrameworkCore.Validation.Faculties
 {
     public class ValidateFacultyNameIsUnicode : ValidationAttribute
     {

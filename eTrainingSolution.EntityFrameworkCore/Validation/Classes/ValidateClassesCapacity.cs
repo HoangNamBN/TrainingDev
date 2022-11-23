@@ -1,7 +1,7 @@
 ﻿using eTrainingSolution.EntityFrameworkCore.Entities;
 using System.ComponentModel.DataAnnotations;
 
-namespace eTrainingSolution.EntityFrameworkCore.Validation
+namespace eTrainingSolution.EntityFrameworkCore.Validation.Classes
 {
     public class ValidateClassesCapacity : ValidationAttribute
     {
@@ -13,13 +13,13 @@ namespace eTrainingSolution.EntityFrameworkCore.Validation
             // return instance của service
             var _context = (eTrainingDbContext)validationContext?.GetService(typeof(eTrainingDbContext));
 
-            if(_context.Classrooms.FirstOrDefault(m => m.ID == classesCapacity.ID) != null)
+            if (_context.Classrooms.FirstOrDefault(m => m.ID == classesCapacity.ID) != null)
             {
                 return ValidationResult.Success;
             }
 
             // nếu mà chưa chọn Khoa cho lớp học
-            if(classesCapacity.FacultyID == null)
+            if (classesCapacity.FacultyID == null)
             {
                 return new ValidationResult("Bạn cần chọn Khoa cho lớp học đăng ký");
             }
@@ -28,14 +28,14 @@ namespace eTrainingSolution.EntityFrameworkCore.Validation
             var capactityFaculty = _context.Facultys?.FirstOrDefault(m => m.ID == classesCapacity.FacultyID)?.CapacityOfFaculty;
 
             // lấy tổng số lượng học sinh các lớp
-            var capactityClasses =  _context.Classrooms.Where(x => x.FacultyID == classesCapacity.FacultyID).ToList() ?? new List<Classroom>();
+            var capactityClasses = _context.Classrooms.Where(x => x.FacultyID == classesCapacity.FacultyID).ToList() ?? new List<Classroom>();
             var sum_capactityClasses = capactityClasses.Sum(x => x.ClassCapacity);
 
             // tính số lượng sinh viên còn lại mà lớp có thể đăng ký được trong một Khoa
             var capactity_Subtraction = capactityFaculty - sum_capactityClasses;
-            if(capactity_Subtraction > 0)
+            if (capactity_Subtraction > 0)
             {
-                return (classesCapacity?.ClassCapacity > capactity_Subtraction? new ValidationResult($"Khoa còn đủ chỗ cho {(int)capactity_Subtraction} học sinh") : ValidationResult.Success);
+                return classesCapacity?.ClassCapacity > capactity_Subtraction ? new ValidationResult($"Khoa còn đủ chỗ cho {(int)capactity_Subtraction} học sinh") : ValidationResult.Success;
             }
             return new ValidationResult("Khoa đã đủ sinh viên");
         }

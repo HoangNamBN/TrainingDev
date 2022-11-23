@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace eTrainingSolution.EntityFrameworkCore.Validation
+namespace eTrainingSolution.EntityFrameworkCore.Validation.Classes
 {
     public class ValidateClassNameIsUnicode : ValidationAttribute
     {
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            if(value == null)
+            if (value == null)
             {
                 return new ValidationResult("Bạn cần nhập thông tin tên lớp");
             }
@@ -27,7 +27,7 @@ namespace eTrainingSolution.EntityFrameworkCore.Validation
 
             foreach (var itemSchool in schooolDbContext)
             {
-                if(itemSchool.Id == classInstance.SchoolID)
+                if (itemSchool.Id == classInstance.SchoolID)
                 {
                     var facultysDbContext = _context.Facultys.Where(m => m.SchoolID == itemSchool.Id).ToList();
                     foreach (var itemFaculty in facultysDbContext)

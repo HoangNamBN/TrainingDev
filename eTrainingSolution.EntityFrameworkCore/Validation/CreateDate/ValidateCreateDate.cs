@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace eTrainingSolution.EntityFrameworkCore.Entities
+namespace eTrainingSolution.EntityFrameworkCore.Validation.CreateDate
 {
     public class ValidateCreateDate : ValidationAttribute
     {
