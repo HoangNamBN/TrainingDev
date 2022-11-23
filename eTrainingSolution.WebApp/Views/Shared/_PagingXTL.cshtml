@@ -1,0 +1,126 @@
+﻿@using eTrainingSolution.WebApp.Areas.Identity.Models.Page;
+
+@model PagingModel
+
+@{
+    int currentPage = Model.currentPage;
+    int countPage = Model.CountPage;
+    var generateURL = Model.GenerateUrl;
+
+    // Nếu mà trang hiện tại > tổng số trang thì gán cho là trang cuối cùng
+    if (currentPage > countPage) currentPage = countPage;
+
+    // Nếu mà không tồn tại trang nào thì return
+    if (countPage <= 1) return;
+
+    // khai báo 2 biến trang trước đó và trang tiếp theo
+    int? preview = null;
+    int? next = null;
+
+    // Nếu trang hiện tại không phải là trang thứ nhất thì trang khi ấn preview sẽ quay lại trang trước đó
+    if(currentPage > 1)
+    {
+        preview = currentPage - 1;
+    }
+
+    if(currentPage < countPage)
+    {
+        next = currentPage + 1;
+    }
+
+    // số trang mở rộng về mỗi bên cho trang hiện tại
+    int delta = 5;
+    // số trang hai bên trang hiện tại
+    int remain = delta * 2;
+
+    // Khai báo list các trang hiển thị để điều hướng
+    List<int> pageRanges = new List<int>();
+
+    pageRanges.Add(currentPage);
+
+    // các trang phát triển về hai bên trang hiện tại
+    for(int i = 1; i <= delta; i++)
+    {
+        if(currentPage + i <= countPage)
+        {
+            pageRanges.Add(currentPage + i);
+            remain--;
+        }
+        if(currentPage - i >= 1)
+        {
+            pageRanges.Insert(0, currentPage - i);
+            remain--;
+        }
+    }
+
+    // xử lý thêm vào các trang cho đủ remain
+    if(remain > 0)
+    {
+        if(pageRanges[0] == 1)
+        {
+            for(int i = 1; i <= remain; i++)
+            {
+                if(pageRanges.Last() + 1 <= countPage)
+                {
+                    pageRanges.Add(pageRanges.Last() + 1);
+                }
+            }
+        }
+        else
+        {
+            for(int i = 1; i <=remain; i++)
+            {
+                if(pageRanges.First() -1 > 1)
+                {
+                    pageRanges.Insert(0, pageRanges.First() - 1);
+                }
+            }
+        }
+    }
+}
+
+<ul class="pagination">
+    @{
+        if (preview != null)
+        {
+           <li class="page-item">
+                <a class="page-link" href="@generateURL(preview)">Trang trước</a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Trang trước</a>
+            </li>
+        }
+
+        @foreach(var pageItem in pageRanges)
+        {
+            if(pageItem != currentPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@generateURL(pageItem)">@pageItem</a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item active" aria-current ="page">
+                    <a class="page-link" href="#">@pageItem</a>
+                </li>
+            }
+        }
+
+        if (next != null)
+        {
+            <li class="page-item">
+                <a class="page-link" href="@generateURL(next)">Trang sau</a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Trang sau</a>
+            </li>
+        }
+    }
+</ul>
