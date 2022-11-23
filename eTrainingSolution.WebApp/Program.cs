@@ -49,9 +49,12 @@ builder.Services.Configure<IdentityOptions>(options =>
 // thiết lập đường dẫn đến các trang
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/login/"; // thiết lập đường dẫn đến trang login
-    options.LogoutPath = "/logout/"; // thiết lập đường dẫn để logout
-    options.AccessDeniedPath = "/Account/AccessDenied"; // thiết lập đường dẫn khi mà không có quyền truy cập
+    // thiết lập đường dẫn đến trang login
+    options.LoginPath = "/login/";
+    // thiết lập đường dẫn để logout
+    options.LogoutPath = "/logout/";
+    // thiết lập đường dẫn khi mà không có quyền truy cập
+    options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
 // đăng ký dịch vụ xác thực bằng Email
