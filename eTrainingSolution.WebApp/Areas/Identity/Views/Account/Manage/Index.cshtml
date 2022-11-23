@@ -1,0 +1,46 @@
+﻿@using Microsoft.AspNetCore.Identity.UI.V4.Pages.Account.Manage.Internal
+@using eTrainingSolution.WebApp.Areas.Identity.Models.Account.Manage
+
+@model ProfileModel
+
+@{
+    ViewData["Title"] = "Hồ sơ";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+
+<h4>@ViewData["Title"]</h4>
+
+<div class="row">
+    <div class="col-md-6">
+        <form method="post" asp-action="Index">
+            <div class="form-group">
+                <label asp-for="UserName"></label>
+                <input asp-for="UserName" class="form-control" disabled/>
+            </div>
+            <div class="form-group">
+                <label asp-for="Phone"></label>
+                <input asp-for="Phone" name="Phone" class="form-control"/>
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FullName"></label>
+                <input asp-for="FullName" name="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address"></label>
+                <input asp-for="Address" name="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Birthday"></label>
+                <input asp-for="Birthday" name="Birthday" class="form-control" type="date" />
+                <span asp-validation-for="Birthday" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Lưu hồ sơ</button>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

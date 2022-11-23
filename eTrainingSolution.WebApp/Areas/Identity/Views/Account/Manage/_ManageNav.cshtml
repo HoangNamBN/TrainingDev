@@ -1,0 +1,12 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity.UI.V4.Pages.Account.Manage.Internal
+@using eTrainingSolution.EntityFrameworkCore.Entities
+
+@inject SignInManager<User> SignInManager
+
+<ul class="nav nav-pills flex-column">
+    @*Sử dụng ManageNavPages để kiểm tra xem tran hiện tại có phải là trang Index, Email, changePassword dựa vào ViewContext nếu đúng thì trả về active*@
+    <li class="nav-item"><a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" id="profile" asp-action="Index" asp-controller="Manage">Profile</a></li>
+    <li class="nav-item"><a class="nav-link @ManageNavPages.EmailNavClass(ViewContext)" id="email" asp-action="Email" asp-controller="Manage">Email</a></li>
+    <li class="nav-item"><a class="nav-link @ManageNavPages.ChangePasswordNavClass(ViewContext)" id="change-password" asp-action="ChangePassword" asp-controller="Manage">Password</a></li>
+</ul>
