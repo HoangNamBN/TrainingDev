@@ -7,7 +7,7 @@
 }
 <h1>Danh sách các khoa</h1>
 
-<a class="btn btn-primary" asp-area="Identity" asp-controller="Faculty" asp-action="Create">Thêm mới</a>
+<a class="btn btn-primary btn-sm" asp-area="Identity" asp-controller="Faculty" asp-action="Create">Thêm mới</a>
 <p></p>
 
 @{
@@ -37,9 +37,9 @@
                         <td>@Html.DisplayFor(ModelItem => item.CreatedBy)</td>
                         <td>@Html.DisplayFor(ModelItem => item.Schools.SchoolName)</td>
                         <td class="text-center">
-                            <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.ID">Sửa</a>
-                            <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.ID">Xóa</a>
-                            <a class="btn btn-info" asp-action="View" asp-route-id="@item.ID">Xem</a>
+                            <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.ID">Sửa</a>
+                            <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.ID">Xóa</a>
+                            <a class="btn btn-info btn-sm" asp-action="View" asp-route-id="@item.ID">Xem</a>
                         </td>
                     </tr>
                 }

@@ -7,7 +7,7 @@
 }
 <h1>Danh sách trường học</h1>
 
-<a class="btn btn-primary" asp-action="Create">Thêm mới</a>
+<a class="btn btn-primary btn-sm" asp-action="Create">Thêm mới</a>
 <p></p>
 
 @{
@@ -36,9 +36,9 @@
                         <td class="text-center">@Html.DisplayFor(modelItem => item.CreateDate)</td>
                         <td class="text-center">@Html.DisplayFor(modelItem => item.CapacityOfTheSchool)</td>
                         <td class="text-center">
-                            <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.Id">Sửa</a>
-                            <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Xóa</a>
-                            <a class="btn btn-info" asp-action="View" asp-route-id="@item.Id">Xem</a>
+                            <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Sửa</a>
+                            <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Xóa</a>
+                            <a class="btn btn-info btn-sm" asp-action="View" asp-route-id="@item.Id">Xem</a>
                         </td>
                     </tr>
                 }
