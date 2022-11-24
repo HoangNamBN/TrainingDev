@@ -1,0 +1,58 @@
+﻿@using Microsoft.AspNetCore.Identity.UI.V4.Pages.Account.Manage.Internal
+@using eTrainingSolution.WebApp.Areas.Identity.Models.Account.Manage
+
+@model ProfileModel
+
+@{
+    ViewData["Title"] = "Hồ sơ";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+
+<h5>@ViewData["Title"]</h5>
+@{
+    if (Model.StatusMessage != null)
+    {
+        <p class="text-white bg-success">Bạn đã cập nhật hồ sơ thành công</p>
+    }
+    //else
+    //{
+    //    <p class="text-danger">Chưa cập nhật thông tin nào của user</p>
+    //}
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Index" asp-controller="Manage" method="post">
+            <div class="form-group">
+                <label asp-for="UserName"></label>
+                <input asp-for="UserName" class="form-control" disabled/>
+            </div>
+            <div class="form-group">
+                <label asp-for="Phone"></label>
+                <input asp-for="Phone" name="Phone" class="form-control"/>
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FullName"></label>
+                <input asp-for="FullName" name="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address"></label>
+                <input asp-for="Address" name="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Birthday"></label>
+                @*@Html.TextBoxFor(m => m.Birthday, "{0:dd/MM/yyyy}", new {@class = "form-control"})*@
+                <input asp-for="Birthday" name="Birthday" class="form-control" type="date" />
+                <span asp-validation-for="Birthday" class="text-danger"></span>
+            </div>
+            <p></p>
+            <button asp-action="Update" type="submit" class="btn btn-primary">Lưu hồ sơ</button>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
