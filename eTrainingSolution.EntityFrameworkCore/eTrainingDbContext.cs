@@ -33,6 +33,7 @@ namespace eTrainingSolution.EntityFrameworkCore
             modelBuilder.ApplyConfiguration(new ClassConfiguration());
             modelBuilder.ApplyConfiguration(new SchoolConfiguation());
             modelBuilder.ApplyConfiguration(new FacultyConfiguration());
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
             base.OnModelCreating(modelBuilder);
             // loại bỏ tiền tố AspNet trước AspNetUserRole, ...
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
