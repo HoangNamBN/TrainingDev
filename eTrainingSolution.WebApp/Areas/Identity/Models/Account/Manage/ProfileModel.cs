@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using eTrainingSolution.EntityFrameworkCore.Validation.CreateDate;
+using eTrainingSolution.Shared;
+using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace eTrainingSolution.WebApp.Areas.Identity.Models.Account.Manage
 {
@@ -10,7 +13,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Models.Account.Manage
         [Display(Name = "Tên người dùng")]
         public string? UserName { get; set; }
 
-        [Phone]
+        [Phone(ErrorMessage ="{0} sai định dạng")]
         [Display(Name = "Số điện thoại")]
         public string? Phone { get; set; }
 
@@ -23,7 +26,12 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Models.Account.Manage
         public string? Address { get; set; }
 
         [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
         [Display(Name = "Ngày sinh")]
+        //[ModelBinder(BinderType =typeof(ConvertDateTime))]
         public DateTime? Birthday { get; set; }
+
+        [TempData]
+        public string? StatusMessage { get; set; }
     }
 }
