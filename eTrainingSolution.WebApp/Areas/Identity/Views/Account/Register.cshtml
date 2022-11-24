@@ -3,7 +3,7 @@
 @using eTrainingSolution.WebApp.Areas.Identity.Models.Account;
 
 
-@model RegisterModel; // sử dụng model RegisterModel
+@model User; // sử dụng model RegisterModel
 @*inject để quản lý việc đăng nhập, đăng ký*@
 @inject SignInManager<User> SignInManager; 
 
@@ -41,12 +41,52 @@
                     <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                 </div>
             </div>
-            <div class="form-group">
-                <label></label>
-                <div class="col-md-10">
-                    <button type="submit" class="btn btn-primary">Đăng ký</button>
+            @if (@ViewBag.isExitUser == false)
+            {
+                <div class="form-group">
+                    <label></label>
+                    <div class="col-md-10">
+                        <button type="submit" class="btn btn-primary">Đăng ký</button>
+                    </div>
                 </div>
-            </div>
+            }
+            else
+            {
+                <div class="form-group">
+                    <label asp-for="SchoolID" class="control-label"></label>
+                    <div class="col-md-10">
+                        <select asp-for="SchoolID" class="form-control" asp-items="ViewBag.SchoolID" id="select-school" onchange="getIDSchool()">
+                            <option>Chọn trường học</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="SchoolID"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="FacultyID" class="control-label"></label>
+                    <div class="col-md-10">
+                        <select asp-for="FacultyID" class="form-control" asp-items="ViewBag.FacultyID" id="select-faculity">
+                            <option>Chọn Khoa</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="FacultyID"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ClassID" class="control-label"></label>
+                    <div class="col-md-10">
+                        <select asp-for="ClassID" class="form-control" asp-items="ViewBag.ClassID" id="select-classes">
+                            <option>Chọn lớp học</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="ClassID"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label></label>
+                    <div class="col-md-10">
+                        <button type="submit" class="btn btn-primary">Đăng ký</button>
+                    </div>
+                </div>
+            }
+           
         </form>
     </div>
     <div class="col-md-6 col-md-offset-2">
@@ -80,4 +120,26 @@
 </div>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        function getIDSchool(){
+            // lấy ra id của trường được chọn
+            var selectSchool = document.getElementById("select-school").value
+
+            // lấy mảng danh sách Khoa
+            var listFaculty = document.getElementById("select-faculity")
+
+            var ArrFaculty = listFaculty.children;
+            
+
+            // tạo ra 1 mảng 
+            var faculties = []
+            for(var i = 0; i < ArrFaculty.length; i++){
+                faculties.push(ArrFaculty[i]);
+            }
+
+            var result = faculties.filter(e => e.value === selectSchool);
+
+            console.log(result);
+        }
+    </script>
 }
