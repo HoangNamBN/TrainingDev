@@ -50,5 +50,6 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
 
         public ICollection<Faculty>? Faculties { get; set; }
         public ICollection<Classroom>? Classrooms { get; set; }
+        public ICollection<User>? Users { get; set; }
     }
 }

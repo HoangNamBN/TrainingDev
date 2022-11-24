@@ -55,5 +55,6 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
         [Display(Name = "Trường")]
         public Guid? SchoolID { get; set; }
         public ICollection<Classroom>? Classrooms { get; set; }
+        public ICollection<User>? Users { get; set; }
     }
 }

@@ -59,7 +59,21 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
         [Display(Name = "Người tạo")]
         [StringLength(255, ErrorMessage = "Tên người tạo chỉ tối đa 255 kí tự")]
         public string? CreatedBy { get; set; }
-        public Classroom? Classrooms { get; set; }
 
+        /// <summary>
+        /// Trường thông tin nhập lại Password dùng để so sánh Password với ConfirmPassword
+        /// </summary>
+        [StringLength(100, ErrorMessage = "{0} phải nhập từ {2} đến {1} kí tự !", MinimumLength = 8)]
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm Password")]
+        [Compare("Password", ErrorMessage = "Mật khẩu nhập lại không chính xác!")]
+        public string? ConfirmPassword { get; set; }
+        public Classroom? Classrooms { get; set; }
+        public Guid? ClassID { get; set; }
+
+        public Faculty? Facultys { get; set; }
+        public Guid? FacultyID { get; set; }
+        public School? Schools { get; set; }
+        public Guid? SchoolID { get; set; }
     }
 }
