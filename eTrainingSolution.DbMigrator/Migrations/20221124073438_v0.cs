@@ -123,6 +123,11 @@ namespace eTrainingSolution.DbMigrator.Migrations
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     ClassroomsID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IDClass = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    FacultysID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IDFacultys = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    SchoolsId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IDSchool = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -146,6 +151,16 @@ namespace eTrainingSolution.DbMigrator.Migrations
                         column: x => x.ClassroomsID,
                         principalTable: "Classes",
                         principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_Users_Faculty_FacultysID",
+                        column: x => x.FacultysID,
+                        principalTable: "Faculty",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_Users_Schools_SchoolsId",
+                        column: x => x.SchoolsId,
+                        principalTable: "Schools",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -284,6 +299,16 @@ namespace eTrainingSolution.DbMigrator.Migrations
                 name: "IX_Users_ClassroomsID",
                 table: "Users",
                 column: "ClassroomsID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_FacultysID",
+                table: "Users",
+                column: "FacultysID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_SchoolsId",
+                table: "Users",
+                column: "SchoolsId");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",

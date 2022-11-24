@@ -12,8 +12,8 @@ using eTrainingSolution.EntityFrameworkCore;
 namespace eTrainingSolution.DbMigrator.Migrations
 {
     [DbContext(typeof(eTrainingDbContext))]
-    [Migration("20221124011648_v0")]
-    partial class v0
+    [Migration("20221124075832_v4")]
+    partial class v4
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -276,12 +276,19 @@ namespace eTrainingSolution.DbMigrator.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<Guid?>("ClassID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("ClassroomsID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConfirmPassword")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime?>("CreateDate")
                         .HasColumnType("datetime2");
@@ -299,6 +306,9 @@ namespace eTrainingSolution.DbMigrator.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<Guid?>("FacultyID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FullName")
                         .HasMaxLength(200)
@@ -334,6 +344,9 @@ namespace eTrainingSolution.DbMigrator.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<Guid?>("SchoolID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -348,6 +361,8 @@ namespace eTrainingSolution.DbMigrator.Migrations
 
                     b.HasIndex("ClassroomsID");
 
+                    b.HasIndex("FacultyID");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -355,6 +370,8 @@ namespace eTrainingSolution.DbMigrator.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("SchoolID");
 
                     b.ToTable("Users", (string)null);
                 });
@@ -440,7 +457,19 @@ namespace eTrainingSolution.DbMigrator.Migrations
                         .WithMany("Users")
                         .HasForeignKey("ClassroomsID");
 
+                    b.HasOne("eTrainingSolution.EntityFrameworkCore.Entities.Faculty", "Facultys")
+                        .WithMany("Users")
+                        .HasForeignKey("FacultyID");
+
+                    b.HasOne("eTrainingSolution.EntityFrameworkCore.Entities.School", "Schools")
+                        .WithMany("Users")
+                        .HasForeignKey("SchoolID");
+
                     b.Navigation("Classrooms");
+
+                    b.Navigation("Facultys");
+
+                    b.Navigation("Schools");
                 });
 
             modelBuilder.Entity("eTrainingSolution.EntityFrameworkCore.Entities.Classroom", b =>
@@ -451,6 +480,8 @@ namespace eTrainingSolution.DbMigrator.Migrations
             modelBuilder.Entity("eTrainingSolution.EntityFrameworkCore.Entities.Faculty", b =>
                 {
                     b.Navigation("Classrooms");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("eTrainingSolution.EntityFrameworkCore.Entities.School", b =>
@@ -458,6 +489,8 @@ namespace eTrainingSolution.DbMigrator.Migrations
                     b.Navigation("Classrooms");
 
                     b.Navigation("Faculties");
+
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }
