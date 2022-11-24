@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Text.Encodings.Web;
 
@@ -59,10 +61,23 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         [HttpGet]
         // cho phép người dùng user không cần đăng nhâp cũng truy cập được action này
         [AllowAnonymous]
-        public IActionResult Register(string? returnUrl = null)
+        public async Task<IActionResult> RegisterAsync(string? returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
             ViewData["ReturnUrl"] = returnUrl;
+
+            // lấy ra danh sách user
+            var listUsers = _eTrainingDbContext.Users?.ToList() ?? new List<User>();
+            if(listUsers.Count == 0)
+            {
+                ViewBag.isExitUser = false;
+            }
+
+            // lấy dữ liệu truyền sang cho View
+            ViewData["SchoolID"] = new SelectList(_eTrainingDbContext.Schools, "Id", "SchoolName");
+            ViewData["FacultyID"] = new SelectList(_eTrainingDbContext.Facultys, "ID", "FacultyName");
+            ViewData["ClassID"] = new SelectList(_eTrainingDbContext.Classrooms, "ID", "ClassName");
+
             return View();
         }
 
