@@ -41,6 +41,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Roles = RoleType.Admin)]
         public async Task<IActionResult> Index()
         {
             var data = _roleManager.Roles.OrderBy(data => data.Name).ToList();

@@ -29,6 +29,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// </summary>
         /// <returns>Index.cshtml</returns>
         [HttpGet]
+        [Authorize(Roles = RoleType.Admin)]
         public async Task<IActionResult> Index()
         {
             // sử dụng toán tử 2 ngôi. Nếu mà không null thì trả về danh sách

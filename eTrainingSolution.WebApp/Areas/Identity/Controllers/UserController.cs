@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
@@ -33,6 +34,8 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// Khi thực hiện ấn vào Quản lý thành viên trong Quản lý Role
         /// </summary>
         /// <returns></returns>
+        [HttpGet]
+        [Authorize(Roles = RoleType.Admin)]
         public async Task<IActionResult> Index([FromQuery(Name = "p")] int currentPage)
         {
             var model = new UserModel();

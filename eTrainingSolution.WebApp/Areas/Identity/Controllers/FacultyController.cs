@@ -25,7 +25,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         #endregion
 
         #region Index
-
+        [Authorize(Roles = RoleType.Admin)]
         [HttpGet]
         public async Task<IActionResult> Index()
         {
