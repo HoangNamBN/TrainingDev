@@ -34,8 +34,9 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
         [Required(ErrorMessage = "Bạn cần nhập ngày lập của Lớp")]
         [Display(Name = "Ngày thành lập")]
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [ValidateCreateDate(ErrorMessage ="Ngày thành lập nhỏ hơn ngày hiện tại")]
+        [ValidateClass_CreateDate]
         public DateTime? CreateDate { get; set; }
 
         /// <summary>

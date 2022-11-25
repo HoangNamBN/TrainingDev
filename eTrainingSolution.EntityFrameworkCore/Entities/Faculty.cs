@@ -1,5 +1,6 @@
 ﻿using eTrainingSolution.EntityFrameworkCore.Validation.CreateDate;
 using eTrainingSolution.EntityFrameworkCore.Validation.Faculties;
+using eTrainingSolution.EntityFrameworkCore.Validation.School;
 using System.ComponentModel.DataAnnotations;
 
 namespace eTrainingSolution.EntityFrameworkCore.Entities
@@ -37,6 +38,7 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString ="{0:yyyy-MM-dd}", ApplyFormatInEditMode =true)]
         [ValidateCreateDate(ErrorMessage ="Ngày thành lập nhỏ hơn ngày hiện tại")]
+        [ValidateSchool_CreateDate]
         public DateTime? CreateDate { get; set; }
 
         /// <summary>
