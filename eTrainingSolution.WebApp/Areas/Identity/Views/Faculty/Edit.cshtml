@@ -3,7 +3,7 @@
 @model Faculty;
 
 @{
-    ViewData["Title"] = "Sửa thông tin";
+    ViewData["Title"] = "Sửa thông tin của Khoa";
 }
 <h1>Sửa thông tin</h1>
 
@@ -23,7 +23,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="CreateDate" class="control-label"></label>
-                <input asp-for="CreateDate" class="form-control" name="CreateDate" type="date" />
+                <input asp-for="CreateDate" class="form-control" name="CreateDate" type="date"/>
                 <span asp-validation-for="CreateDate" class="text-danger"></span>
             <div class="form-group">
                 <label asp-for="CreatedBy" class="control-label"></label>

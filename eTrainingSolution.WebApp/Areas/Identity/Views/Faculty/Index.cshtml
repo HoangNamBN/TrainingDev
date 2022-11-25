@@ -8,6 +8,15 @@
 <h1>Danh sách các khoa</h1>
 
 <a class="btn btn-primary btn-sm" asp-area="Identity" asp-controller="Faculty" asp-action="Create">Thêm mới</a>
+@{
+    if(ViewBag.isAdmin != null)
+    {
+        <form asp-action="Index" method="get" class="form-inline">
+            Nhập tên trường <input type="text" name="search" /> <button class="btn btn-sm btn-dark text-white">Tìm kiếm</button>
+        </form>
+    }
+}
+
 <p></p>
 
 @{
