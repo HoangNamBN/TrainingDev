@@ -10,27 +10,12 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 {
     [Area("Identity")]
     [Route("/Role/[action]")]
-    public class RoleController : Controller
+    public class RoleController : BaseController
     {
         #region Khai báo các dịch vụ sử dụng
-        /// <summary>
-        /// sử dụng RoleManger để quản lý và đọc các vai trò, các dịch vụ
-        /// </summary>
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly eTrainingDbContext _eTrainingDbContext;
-        private readonly UserManager<User> _userManager;
-
-        /// <summary>
-        /// inject các đối tượng vào trong hàm khởi tạo
-        /// </summary>
-        /// <param name="roleManager"></param>
-        /// <param name="eTrainingDbContext"></param>
-        /// <param name="userManager"></param>
-        public RoleController(RoleManager<IdentityRole> roleManager, eTrainingDbContext eTrainingDbContext, UserManager<User> userManager)
+        public RoleController(SignInManager<User> signInManager, UserManager<User> userManager, eTrainingDbContext eTrainingDbContext,
+            RoleManager<IdentityRole> roleManager) : base(signInManager, userManager, eTrainingDbContext, roleManager)
         {
-            _roleManager = roleManager;
-            _eTrainingDbContext = eTrainingDbContext;
-            _userManager = userManager;
         }
         #endregion
 

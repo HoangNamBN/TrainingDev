@@ -1,5 +1,5 @@
-﻿using eTrainingSolution.EntityFrameworkCore.Entities;
-using eTrainingSolution.Shared;
+﻿using eTrainingSolution.EntityFrameworkCore;
+using eTrainingSolution.EntityFrameworkCore.Entities;
 using eTrainingSolution.WebApp.Areas.Identity.Models.Account.Manage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -10,17 +10,12 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 {
     [Area("Identity")]
     [Route("/Manage/[action]")]
-    public class ManageController : Controller
+    public class ManageController : BaseController
     {
         #region Khai báo các dịch vụ cần sử dụng
-
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-
-        public ManageController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public ManageController(SignInManager<User> signInManager, UserManager<User> userManager, eTrainingDbContext eTrainingDbContext,
+            RoleManager<IdentityRole> roleManager) : base(signInManager, userManager, eTrainingDbContext, roleManager)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
         }
         #endregion
 

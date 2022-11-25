@@ -1,7 +1,10 @@
 ﻿using eTrainingSolution.EntityFrameworkCore;
 using eTrainingSolution.EntityFrameworkCore.Entities;
 using eTrainingSolution.Shared;
+using eTrainingSolution.WebApp.Areas.Identity.Models.Role;
+using eTrainingSolution.WebApp.Areas.Identity.Models.Users;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -10,31 +13,51 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 {
     [Area("Identity")]
     [Route("/School/[action]")]
-    public class SchoolController : Controller
+    public class SchoolController : BaseController
     {
-        #region Khai báo dbContext
 
-        private readonly eTrainingDbContext _eTrainingDbContext;
-
-        public SchoolController(eTrainingDbContext eTrainingDbContext)
+        #region Kế thừa BaseController
+        public SchoolController(SignInManager<User> signInManager, 
+            UserManager<User> userManager, eTrainingDbContext eTrainingDbContext,
+            RoleManager<IdentityRole> roleManager) : base(signInManager, userManager, eTrainingDbContext, roleManager)
         {
-            _eTrainingDbContext = eTrainingDbContext;
+
         }
 
         #endregion
 
         #region Index
-        /// <summary>
-        /// Sự kiện khi click vào School trên menu
-        /// </summary>
-        /// <returns>Index.cshtml</returns>
+
         [HttpGet]
-        [Authorize(Roles = RoleType.Admin)]
-        public async Task<IActionResult> Index()
+        [Authorize(Roles = RoleType.Manage + "," + RoleType.Admin)]
+        public async Task<IActionResult> Index(string search)
         {
-            // sử dụng toán tử 2 ngôi. Nếu mà không null thì trả về danh sách
-            return _eTrainingDbContext.Schools != null ? View(await _eTrainingDbContext.Schools.ToListAsync()) : Problem("null");
+            User user = await getUserEntities();
+            if(user != null)
+            {
+                bool checkAdmin = await IsAdmin();
+                if (checkAdmin)
+                {
+                    ViewBag.isAdmin = "Admin";
+                    var schoolSearch = from school in _eTrainingDbContext.Schools select school;
+                    if (!string.IsNullOrEmpty(search))
+                    {
+                        schoolSearch = schoolSearch.Where(x => x.SchoolName.Contains(search));
+                        return View(await schoolSearch.ToListAsync());
+                    }
+                    return View(await _eTrainingDbContext.Schools.ToListAsync());
+                }
+
+                var schoolDBContext = _eTrainingDbContext.Schools.Where(m => m.Id == user.SchoolID);
+                if (schoolDBContext == null)
+                {
+                    return Problem("null");
+                }
+                return View(await schoolDBContext.ToListAsync());
+            }
+            return View();
         }
+
         #endregion
 
         #region Create School
@@ -47,7 +70,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = RoleType.Admin)]
+        [Authorize(Roles = RoleType.Admin + "," + RoleType.Manage)]
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Create([Bind("Id, SchoolName, Address, CreateDate, CapacityOfTheSchool")] School school)
         {
@@ -74,21 +97,16 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                 return NotFound();
             }
             var school = await _eTrainingDbContext.Schools.FindAsync(id);
-            if (school == null)
-            {
-                return NotFound();
-            }
             return View(school);
         }
 
         [HttpPost]
-        [Authorize(Roles = RoleType.Admin)]
+        [Authorize(Roles = RoleType.Admin + "," + RoleType.Manage)]
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id, SchoolName, Address, CreateDate, CapacityOfTheSchool")] School school)
         {
             if (id != school.Id)
             {
-                // trả về kết quả không tìm thấy
                 return NotFound();
             }
             if (ModelState.IsValid)
@@ -113,7 +131,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         #region Delete School
 
         [HttpGet]
-        [Authorize(Roles = RoleType.Admin)]
+        [Authorize(Roles = RoleType.Admin + "," + RoleType.Manage)]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null || _eTrainingDbContext.Schools == null)
@@ -128,37 +146,41 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             return View(school);
         }
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = RoleType.Admin)]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid? id)
         {
-            if (id == null)
+            if (id == null || _eTrainingDbContext.Schools == null)
             {
                 return NotFound();
             }
-            if (_eTrainingDbContext.Schools == null)
-            {
-                return Problem("Entity set null");
-            }
             // tìm kiếm thông tin trường học theo id
-            var schoolDbContext = await _eTrainingDbContext.Schools.FindAsync(id);
-            if (schoolDbContext != null)
+            var schoolDb = await _eTrainingDbContext.Schools.FindAsync(id);
+            if (schoolDb != null)
             {
                 // lấy ra danh sách các Khoa theo id trường học
-                var facultuesDb = await _eTrainingDbContext.Facultys.Where(m => m.SchoolID == id).ToListAsync();
-                if (facultuesDb != null)
+                var facultiesDb = await _eTrainingDbContext.Facultys.Where(m => m.SchoolID == id).ToListAsync();
+                if (facultiesDb != null)
                 {
                     // Duyệt Khoa để lấy ra thông tin của lớp học
-                    foreach (var faculties in facultuesDb)
+                    foreach (var faculties in facultiesDb)
                     {
                         // lấy ra danh sách lớp của Khoa
-                        var classesDbContext = await _eTrainingDbContext.Classrooms.Where(m => m.FacultyID == faculties.ID).ToListAsync();
-                        if (classesDbContext != null)
+                        var classDB = await _eTrainingDbContext.Classrooms
+                            .Where(m => m.FacultyID == faculties.ID).ToListAsync();
+                        if (classDB != null)
                         {
-                            _eTrainingDbContext.RemoveRange(classesDbContext);
+                            var userDb = await _eTrainingDbContext.Users.Where(m => m.SchoolID == id).ToListAsync();
+                            _eTrainingDbContext.RemoveRange(classDB);
+                            if(userDb!= null)
+                            {
+                                _eTrainingDbContext.RemoveRange(userDb);
+                            }
                         }
                         _eTrainingDbContext.Remove(faculties);
                     }
                 }
-                _eTrainingDbContext.Remove(schoolDbContext);
+                _eTrainingDbContext.Remove(schoolDb);
             }
             await _eTrainingDbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -169,6 +191,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         #region View thông tin
 
         [HttpGet]
+        [Authorize(Roles = RoleType.Admin + "," + RoleType.Manage)]
         public async Task<IActionResult> View(Guid? id)
         {
             if (id == null || _eTrainingDbContext.Schools == null)

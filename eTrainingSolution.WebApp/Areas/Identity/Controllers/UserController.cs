@@ -14,18 +14,12 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 {
     [Area("Identity")]
     [Route("/User/[action]")]
-    public class UserController : Controller
+    public class UserController : BaseController
     {
         #region Khai báo các dịch vụ sử dụng
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly UserManager<User> _userManager;
-        public readonly eTrainingDbContext _eTrainingDbContext;
-
-        public UserController(RoleManager<IdentityRole> roleManager, UserManager<User> userManager, eTrainingDbContext eTrainingDbContext)
+        public UserController(SignInManager<User> signInManager, UserManager<User> userManager, eTrainingDbContext eTrainingDbContext,
+            RoleManager<IdentityRole> roleManager) : base(signInManager, userManager, eTrainingDbContext, roleManager)
         {
-            _roleManager = roleManager;
-            _userManager = userManager;
-            _eTrainingDbContext = eTrainingDbContext;
         }
         #endregion
 

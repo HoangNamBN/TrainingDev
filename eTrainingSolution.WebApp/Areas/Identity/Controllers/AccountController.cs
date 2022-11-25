@@ -21,34 +21,13 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
     /// </summary>
     [Area("Identity")]
     [Route("/Account/[action]")]
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
+
         #region Khai báo các dịch vụ sử dụng
-
-        private readonly SignInManager<User> _signInManager;
-        private readonly UserManager<User> _userManager;
-        private readonly ILogger<AccountController> _logger;
-        private readonly IEmailSender _emailSender;
-        private readonly eTrainingDbContext _eTrainingDbContext;
-        private readonly RoleManager<IdentityRole> _roleManager;
-
-        /// <summary>
-        /// đăng kí các dịch vụ
-        /// </summary>
-        /// <param name="signInManager">Quản lý việc login, logout, ...</param>
-        /// <param name="userManager">Quản lý việc thêm sửa xóa tài khoản</param>
-        /// <param name="logger">Viết ra log</param>
-        /// <param name="emailSender">dùng để xác thực email</param>
-        public AccountController(SignInManager<User> signInManager,
-            UserManager<User> userManager, ILogger<AccountController> logger,
-            IEmailSender emailSender, eTrainingDbContext eTrainingDbContext, RoleManager<IdentityRole> roleManager)
+        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, eTrainingDbContext eTrainingDbContext, 
+            RoleManager<IdentityRole> roleManager): base(signInManager, userManager, eTrainingDbContext, roleManager)
         {
-            _signInManager = signInManager;
-            _userManager = userManager;
-            _logger = logger;
-            _emailSender = emailSender;
-            _eTrainingDbContext = eTrainingDbContext;
-            _roleManager = roleManager;
         }
         #endregion
 
@@ -61,7 +40,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         [HttpGet]
         // cho phép người dùng user không cần đăng nhâp cũng truy cập được action này
         [AllowAnonymous]
-        public async Task<IActionResult> RegisterAsync(string? returnUrl = null)
+        public async Task<IActionResult> RegisterAsync(User user, string? returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
             ViewData["ReturnUrl"] = returnUrl;
@@ -74,11 +53,9 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             }
 
             // lấy dữ liệu truyền sang cho View
-            ViewData["SchoolID"] = new SelectList(_eTrainingDbContext.Schools, "Id", "SchoolName");
-            ViewData["FacultyID"] = new SelectList(_eTrainingDbContext.Facultys, "ID", "FacultyName");
-            ViewData["ClassID"] = new SelectList(_eTrainingDbContext.Classrooms, "ID", "ClassName");
+            ViewData["SchoolID"] = new SelectList(_eTrainingDbContext.Schools, "Id", "SchoolName", user.SchoolID);
 
-            return View();
+            return View(user);
         }
 
         /// <summary>
@@ -91,7 +68,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         // chống giả mạo một request không phải từ chính website
         // cơ chế là khi gửi request Post lên nó sẽ kiểm tra token có tồn tại hay không. Nếu cookie bị thiếu hoặc giá trị không đúng thị nó sẽ không xử lý request này
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterModel model, string? returnUrl = null)
+        public async Task<IActionResult> Register(User model, string? returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
             ViewData["ReturnUrl"] = returnUrl;
@@ -102,7 +79,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                 var userName = model.Email.Substring(0, model.Email.LastIndexOf('@'));
 
                 // lấy danh sách user
-                var user = new User { UserName = userName, Email = model.Email };
+                var user = new User { UserName = userName, Email = model.Email, SchoolID = model.SchoolID, ConfirmPassword = model.ConfirmPassword};
                 // trả về đối tượng IdentityResult
                 var result = await _userManager.CreateAsync(user, model.Password);
                 var listUsers = _eTrainingDbContext.Users?.ToList() ?? new List<User>();
@@ -117,7 +94,6 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                         await _roleManager.CreateAsync(new IdentityRole(RoleType.Admin));
                         await _userManager.AddToRoleAsync(user, RoleType.Admin);
                     }
-                    _logger.LogInformation("Đã tạo user mới!");
 
                     // phát sinh Token dựa theo thông tin của User để xác thực Email
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -131,9 +107,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                         "/Account/ConfirmEmail", pageHandler: null,
                         values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl }, protocol: Request.Scheme);
 
-                    // gửi tới email của người dùng đã đăng ký
-                    await _emailSender.SendEmailAsync(model.Email, "Xác thực địa chỉ Email",
-                        $"Bạn đã đăng ký tài khoản thành công! <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'> bấm vào đây </a> để kích hoạt tài khoản");
+                    
 
                     // if mà yêu cầu xác nhận tài khoản trước khi đăng nhập thì sẽ chuyển hướng sang trang RegisterConfirmation
                     if (_userManager.Options.SignIn.RequireConfirmedAccount) // mặc định giá trị của RequireConfirmedAccount là false
@@ -226,7 +200,6 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                 // Nếu như tài khoản đăng nhập nhập sai quá 3 lần
                 if (resultLogin.IsLockedOut)
                 {
-                    _logger.LogWarning("Tài khoản của bạn đã bị xóa do sai quá 3 lần");
                     return View("Lockout");
                 }
 
@@ -244,7 +217,6 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                 if (resultLogin.Succeeded)
                 {
                     // ghi vào log là đã đăng nhập thành công và Redire vào trang tương ứng
-                    _logger.LogInformation(loginModel.Email.Substring(0, loginModel.Email.LastIndexOf('@')) + "đã đăng nhập thành công");
                     return Redirect(returnUrl);
                 }
                 else
@@ -279,7 +251,6 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             await _signInManager.SignOutAsync();
             // xóa cookie
             Response.Cookies.Delete("aspToken");
-            _logger.LogInformation("Người dùng đã đăng xuất");
             return RedirectToAction("Index", "Home", new { area = "" });
 
         }
