@@ -25,5 +25,7 @@
         public const string Member = "Member";
 
         // => đã đổi thành chỉ có Admin mới xem được thông tin của trường, lớp, khoa, ... còn lại chỉ được sửa thông tin của chính mình
+
+        public const string Manage = "Manage";
     }
 }
