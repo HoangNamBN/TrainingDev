@@ -19,26 +19,20 @@ namespace eTrainingSolution.EntityFrameworkCore.Validation.Classes
 
             // tạo ra obejct Instance
             var classInstance = (Classroom)validationContext.ObjectInstance;
-
             var _context = (eTrainingDbContext)validationContext?.GetService(typeof(eTrainingDbContext));
 
-            // lấy thông tin các trường học đang đăng ký
-            var schooolDbContext = _context.Schools?.ToList();
-
-            foreach (var itemSchool in schooolDbContext)
+            // lấy ra danh sách Khoa của trường hiện tại
+            var faculitiesDb = _context.Facultys.Where(m => m.SchoolID == classInstance.SchoolID);
+            foreach (var itemFaculty in faculitiesDb.ToList())
             {
-                if (itemSchool.Id == classInstance.SchoolID)
+                var classDbContext = _context.Classrooms?.Where(m => m.FacultyID == itemFaculty.ID).ToList();
+                foreach (var classDb in classDbContext)
                 {
-                    var facultysDbContext = _context.Facultys.Where(m => m.SchoolID == itemSchool.Id).ToList();
-                    foreach (var itemFaculty in facultysDbContext)
+                    if (classDb.ID != classInstance.ID && classInstance.ID != null)
                     {
-                        var classDbContext = _context.Classrooms?.Where(m => m.FacultyID == itemFaculty.ID).ToList();
-                        foreach (var classDb in classDbContext)
+                        if (value.ToString().ToUpper() == classDb.ClassName.ToUpper())
                         {
-                            if (value.ToString().ToUpper() == classDb.ClassName.ToUpper())
-                            {
-                                return new ValidationResult("Trường " + itemSchool.SchoolName + " đã tồn tại lớp này tại Khoa " + itemFaculty.FacultyName);
-                            }
+                            return new ValidationResult("Đã tồn tại");
                         }
                     }
                 }

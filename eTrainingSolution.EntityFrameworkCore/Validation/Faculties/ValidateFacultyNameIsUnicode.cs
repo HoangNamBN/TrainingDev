@@ -32,9 +32,12 @@ namespace eTrainingSolution.EntityFrameworkCore.Validation.Faculties
                     var facultysDbContext = _context.Facultys.Where(m => m.SchoolID == itemSchool.Id).ToList();
                     foreach (var itemFaculty in facultysDbContext)
                     {
-                        if (value.ToString().ToUpper() == itemFaculty.FacultyName.ToUpper())
+                        if(itemFaculty.ID != facultyInstance.ID && facultyInstance.ID != null)
                         {
-                            return new ValidationResult("Trường " + itemSchool.SchoolName + " đã tồn tại khoa " + itemFaculty.FacultyName);
+                            if (value.ToString().ToUpper() == itemFaculty.FacultyName.ToUpper())
+                            {
+                                return new ValidationResult("Trường " + itemSchool.SchoolName + " đã tồn tại khoa " + itemFaculty.FacultyName);
+                            }
                         }
                     }
                 }
