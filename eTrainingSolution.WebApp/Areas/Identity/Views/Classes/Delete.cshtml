@@ -12,8 +12,8 @@
 <table class="table table-bordered table-hover">
     <thead>
         <tr class="text-center text-white bg-black">
-            <th>@Html.DisplayNameFor(model => model.ClassName)</th>
-            <th>@Html.DisplayNameFor(model => model.ClassCapacity)</th>
+            <th>@Html.DisplayNameFor(model => model.Name)</th>
+            <th>@Html.DisplayNameFor(model => model.Capacity)</th>
             <th>@Html.DisplayNameFor(model => model.CreateDate)</th>
             <th>@Html.DisplayNameFor(model => model.CreatedBy)</th>
             <th>Khoa</th>
@@ -22,12 +22,12 @@
     </thead>
     <tbody>
         <tr>
-            <td>@Html.DisplayFor(model => model.ClassName)</td>
-            <td class="text-center">@Html.DisplayFor(model => model.ClassCapacity)</td>
+            <td>@Html.DisplayFor(model => model.Name)</td>
+            <td class="text-center">@Html.DisplayFor(model => model.Capacity)</td>
             <td class="text-center">@Html.DisplayFor(model => model.CreateDate)</td>
             <td>@Html.DisplayFor(model => model.CreatedBy)</td>
-            <td>@Html.DisplayFor(model => model.Facultys.FacultyName)</td>
-            <td>@Html.DisplayFor(model => model.Schools.SchoolName)</td>
+            <td>@Html.DisplayFor(model => model.Facults.Name)</td>
+            <td>@Html.DisplayFor(model => model.Schools.Name)</td>
         </tr>
     </tbody>
 </table>

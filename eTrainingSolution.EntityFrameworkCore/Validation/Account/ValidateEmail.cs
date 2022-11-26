@@ -4,26 +4,24 @@ namespace eTrainingSolution.EntityFrameworkCore.Validation.Account
 {
     public class ValidateEmail : ValidationAttribute
     {
+        /// <summary>
+        /// Validate khi nhập Email đăng nhập
+        /// </summary>
+        /// <param name="value">Giá trị Email được nhập vào</param>
+        /// <param name="validationContext"></param>
+        /// <returns></returns>
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            if (value == null)
+            var _DbContext = (DB_Context)validationContext?.GetService(typeof(DB_Context));
+
+            /* lấy ra user tồn tại Email có giá trị value */
+            var isEmailExists = _DbContext.Users?.Where(m => m.Email.Contains((string)value));
+
+            if (isEmailExists.Count() > 0)
             {
-                return new ValidationResult("Email không được để trống");
+                return ValidationResult.Success;
             }
-
-            var _context = (eTrainingDbContext)validationContext?.GetService(typeof(eTrainingDbContext));
-
-            // lấy danh sách
-            var listUser = _context.Users?.ToList();
-
-            foreach (var user in listUser)
-            {
-                if (value.Equals(user.Email))
-                {
-                    return ValidationResult.Success;
-                }
-            }
-            return new ValidationResult("Bạn đã nhập sai email");
+            return new ValidationResult("Email nhập sai");
         }
     }
 }

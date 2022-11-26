@@ -34,5 +34,10 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Models.Account
         [Display(Name = "Confirm Password")]
         [Compare("Password", ErrorMessage = "Mật khẩu nhập lại không chính xác!")]
         public string ConfirmPassword { get; set; }
+
+        /// <summary>
+        /// Trường học
+        /// </summary>
+        public Guid? SchoolID { get; set; }
     }
 }

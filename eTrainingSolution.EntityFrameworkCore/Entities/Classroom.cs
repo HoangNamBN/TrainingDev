@@ -7,54 +7,57 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
     public class Classroom
     {
         /// <summary>
-        /// ID của lớp học
+        /// Mã lớp học
         /// </summary>
         public Guid? ID { get; set; }
 
         /// <summary>
-        /// tên lớp học
+        /// Tên lớp học
         /// </summary>
-        [Required(ErrorMessage = "Bạn cần nhập tên lớp")]
-        [Display(Name = "Lớp")]
-        [StringLength(255, ErrorMessage = "Tên Lớp không được vượt quá 255 kí tự")]
-        [ValidateClassNameIsUnicode]
-        public string? ClassName { get; set; }
+        [Required(ErrorMessage = "Tên lớp không được để trống")]
+        [Display(Name = "Lớp học")]
+        [StringLength(50, ErrorMessage = "Tên Lớp không được vượt quá 50 kí tự")]
+        [ValidateClass_NameUnique]
+        public string? Name { get; set; }
 
         /// <summary>
-        /// sức chứa của lớp học
+        /// Sức chứa của lớp học
         /// </summary>
-        [Required(ErrorMessage = "Bạn cần nhập số lượng học sinh tối đa của một lớp")]
+        [Required(ErrorMessage = "Số lượng học sinh không được trống")]
         [Display(Name = "Số lượng học sinh")]
-        [ValidateClassesCapacity]
-        public int? ClassCapacity { get; set; }
+        [ValidateClass_Capacity]
+        public int? Capacity { get; set; }
 
         /// <summary>
-        /// ngày thành lập
+        /// Ngày thành lập
         /// </summary>
-        [Required(ErrorMessage = "Bạn cần nhập ngày lập của Lớp")]
+        [Required(ErrorMessage = "Ngày thành lập chưa được chọn")]
         [Display(Name = "Ngày thành lập")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        [ValidateCreateDate(ErrorMessage ="Ngày thành lập nhỏ hơn ngày hiện tại")]
+        [Validate_CreateDate(ErrorMessage = "Ngày thành lập chưa đến")]
         [ValidateClass_CreateDate]
         public DateTime? CreateDate { get; set; }
 
         /// <summary>
-        /// người tạo
+        /// Người tạo
         /// </summary>
-        [Required(ErrorMessage = "Bạn cần nhập người thành lập ra Khoa")]
+        [Required(ErrorMessage = "Người tạo chưa được nhập thông tin")]
         [Display(Name = "Người thành lập")]
-        [StringLength(255, ErrorMessage = "Người thành lập không được vượt quá 255 kí tự")]
+        [StringLength(50, ErrorMessage = "Tên người tạo không vượt quá 50 kí tự")]
         public string? CreatedBy { get; set; }
 
-        public Faculty? Facultys { get; set; }
-
+        /// <summary>
+        /// Thuộc tính dùng để tạo khóa ngoại
+        /// </summary>
         [Display(Name = "Khoa")]
-        public Guid? FacultyID { get; set; }
-        public School? Schools { get; set; }
+        public Guid? FacultID { get; set; }
+        public Facult? Facults { get; set; }
 
         [Display(Name = "Trường")]
         public Guid? SchoolID { get; set; }
-        public ICollection<User>? Users { get; set; }
+        public School? Schools { get; set; }
+
+        public ICollection<UserInfo>? Users { get; set; }
     }
 }

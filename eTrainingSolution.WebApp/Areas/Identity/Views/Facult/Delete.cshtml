@@ -1,12 +1,12 @@
-﻿@using eTrainingSolution.EntityFrameworkCore.Entities
+﻿@using eTrainingSolution.EntityFrameworkCore.Entities;
 
-@model Classroom
+@model Facult;
 
 @{
-    ViewData["Title"] = "Thông tin lớp học";
+    ViewData["Title"] = "Xóa thông tin của Khoa";
 }
-
-<h1>Thông tin lớp học</h1>
+<h1>Xóa thông tin</h1>
+<p>Bạn chắc chắn muốn xóa thông tin Khoa đang chọn không?</p>
 
 <table class="table table-bordered table-hover">
     <thead>
@@ -15,7 +15,6 @@
             <th>@Html.DisplayNameFor(model => model.Capacity)</th>
             <th>@Html.DisplayNameFor(model => model.CreateDate)</th>
             <th>@Html.DisplayNameFor(model => model.CreatedBy)</th>
-            <th>Khoa</th>
             <th>Trường</th>
         </tr>
     </thead>
@@ -25,12 +24,13 @@
             <td class="text-center">@Html.DisplayFor(model => model.Capacity)</td>
             <td class="text-center">@Html.DisplayFor(model => model.CreateDate)</td>
             <td>@Html.DisplayFor(model => model.CreatedBy)</td>
-            <td>@Html.DisplayFor(model => model.Facults.Name)</td>
             <td>@Html.DisplayFor(model => model.Schools.Name)</td>
         </tr>
     </tbody>
 </table>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.ID" class="btn btn-warning btn-sm">Sửa</a>
-    <a asp-action="Index" class="btn btn-primary btn-sm">Quay lại</a>
+    <form asp-action="Delete">
+        <input type="submit" asp-route-id="@Model?.ID" class="btn btn-danger btn-sm" value="Delete" />
+        <a asp-action="Index" class="btn btn-primary btn-sm">Quay lại</a>
+    </form>
 </div>

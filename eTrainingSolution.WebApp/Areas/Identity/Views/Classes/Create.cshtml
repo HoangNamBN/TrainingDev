@@ -12,14 +12,14 @@
     <div class="col-md-6">
         <form asp-action="Create" asp-controller="Classes" asp-area="Identity">
             <div class="form-group">
-                <label class="control-label" asp-for="ClassName"></label>
-                <input asp-for="ClassName" name="ClassName" class="form-control"/>
-                <span asp-validation-for="ClassName" class="text-danger"></span>
+                <label class="control-label" asp-for="Name"></label>
+                <input asp-for="Name" name="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label" asp-for="ClassCapacity"></label>
-                <input asp-for="ClassCapacity" name="ClassCapacity" class="form-control" />
-                <span asp-validation-for="ClassCapacity" class="text-danger"></span>
+                <label class="control-label" asp-for="Capacity"></label>
+                <input asp-for="Capacity" name="Capacity" class="form-control" />
+                <span asp-validation-for="Capacity" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label" asp-for="CreateDate"></label>
@@ -32,15 +32,20 @@
                 <span asp-validation-for="CreatedBy" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FacultyID" class="control-label"></label>
-                <select asp-for="FacultyID" class="form-control" asp-items="ViewBag.FacultyID"></select>
-                <span class="text-danger" asp-validation-for="FacultyID"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="SchoolID" class="control-label"></label>
-                <select asp-for="SchoolID" class="form-control" asp-items="ViewBag.SchoolID"></select>
+                <select id="ddlSchool" asp-for="SchoolID" class="form-control" asp-items="ViewBag.SchoolID">
+                    <option>Chọn trường học</option>
+                </select>
                 <span class="text-danger" asp-validation-for="SchoolID"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="FacultID" class="control-label"></label>
+                <select id="ddlFacult" asp-for="FacultID" class="form-control" asp-items="ViewBag.FacultID">
+                    <option>Chọn Khoa theo học</option>
+                </select>
+                <span class="text-danger" asp-validation-for="FacultID"></span>
+            </div>
+
             <p></p>
             <div class="form-group">
                 <button type="submit" class="btn btn-primary btn-sm" value="Create">Đăng ký</button>
@@ -48,5 +53,29 @@
             </div>
         </form>
     </div>
-
 </div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#ddlSchool').change(function () {
+                var selectSchool = $('#ddlSchool').val();
+                var selectFaculties = $('#ddlFacult');
+                selectFaculties.empty();
+
+                if (selectSchool != null && selectSchool != "") {
+                    $.getJSON('@Url.Action("GetFacult")', { SchoolID: selectSchool }, function (facultJson) {
+                        if (facultJson != null && !jQuery.isEmptyObject(facultJson)) {
+                            $.each(facultJson, function (index, city) {
+                                selectFaculties.append($('<option>', {
+                                    value: city.value,
+                                    text: city.text
+                                }));
+                            });
+                        };
+                    });
+                }
+            })
+        });
+    </script>
+}

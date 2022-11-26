@@ -1,12 +1,11 @@
-﻿@using eTrainingSolution.EntityFrameworkCore.Entities
+﻿@using eTrainingSolution.EntityFrameworkCore.Entities;
 
-@model Classroom
+@model Facult;
 
 @{
-    ViewData["Title"] = "Thông tin lớp học";
+    ViewData["Title"] = "Thông tin của Khoa";
 }
-
-<h1>Thông tin lớp học</h1>
+<h1>Thông tin của Khoa</h1>
 
 <table class="table table-bordered table-hover">
     <thead>
@@ -15,7 +14,6 @@
             <th>@Html.DisplayNameFor(model => model.Capacity)</th>
             <th>@Html.DisplayNameFor(model => model.CreateDate)</th>
             <th>@Html.DisplayNameFor(model => model.CreatedBy)</th>
-            <th>Khoa</th>
             <th>Trường</th>
         </tr>
     </thead>
@@ -25,7 +23,6 @@
             <td class="text-center">@Html.DisplayFor(model => model.Capacity)</td>
             <td class="text-center">@Html.DisplayFor(model => model.CreateDate)</td>
             <td>@Html.DisplayFor(model => model.CreatedBy)</td>
-            <td>@Html.DisplayFor(model => model.Facults.Name)</td>
             <td>@Html.DisplayFor(model => model.Schools.Name)</td>
         </tr>
     </tbody>

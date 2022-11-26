@@ -4,128 +4,109 @@ using eTrainingSolution.Shared;
 using eTrainingSolution.WebApp.Areas.Identity.Models.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.EntityFrameworkCore;
-using System.Text;
-using System.Text.Encodings.Web;
 
 namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 {
     /// <summary>
-    /// AllowAnonymous: xác nhận quyền người dùng không login được vẫn có quyền truy cập page
+    /// AllowAnonymous: Không cần login vần vào được
     /// [Area("Identity")]: chỉ ra tên của Area là Identity
-    /// Route: dùng để xác định một đường dẫn chung và đường dẫn này có tác động lên tất cả action
+    /// Route: Đường dẫn chung tác động lên các action
     /// </summary>
     [Area("Identity")]
     [Route("/Account/[action]")]
-    public class AccountController : BaseController
+    public class AccountController : PublicController
     {
-
         #region Khai báo các dịch vụ sử dụng
-        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, eTrainingDbContext eTrainingDbContext, 
-            RoleManager<IdentityRole> roleManager): base(signInManager, userManager, eTrainingDbContext, roleManager)
+        public AccountController(SignInManager<UserInfo> signInManager, UserManager<UserInfo> userManager, DB_Context context, RoleManager<IdentityRole> roleManager)
+            : base(signInManager, userManager, context, roleManager)
         {
         }
         #endregion
 
         #region Register
         /// <summary>
-        /// lấy ra đường dẫn chỉ đến form đăng ký
+        /// AllowAnonymous: Không cần đăng nhập cũng vào được hàm này
         /// </summary>
         /// <param name="returnUrl"></param>
         /// <returns></returns>
         [HttpGet]
-        // cho phép người dùng user không cần đăng nhâp cũng truy cập được action này
         [AllowAnonymous]
-        public async Task<IActionResult> RegisterAsync(User user, string? returnUrl = null)
+        public async Task<IActionResult> RegisterAsync(string? returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
             ViewData["ReturnUrl"] = returnUrl;
 
-            // lấy ra danh sách user
-            var listUsers = _eTrainingDbContext.Users?.ToList() ?? new List<User>();
-            if(listUsers.Count == 0)
-            {
-                ViewBag.isExitUser = false;
-            }
+            /* Lấy danh sách user */
+            List<UserInfo> users = GetListUser();
+            ViewBag.isExitUser = users.Count == 0 ? false : true;
 
-            // lấy dữ liệu truyền sang cho View
-            ViewData["SchoolID"] = new SelectList(_eTrainingDbContext.Schools, "Id", "SchoolName", user.SchoolID);
+            /* truyền dữ liệu từ Controller sang View */
+            ViewData["SchoolID"] = new SelectList(_context.SchoolET, Default.ID, Default.SchoolName);
+            ViewData["FacultID"] = new SelectList(_context.FacultET, Default.ID, Default.FacultName);
+            ViewData["ClassID"] = new SelectList(_context.ClassET, Default.ID, Default.ClassName);
 
-            return View(user);
+            return View();
         }
 
         /// <summary>
-        /// Khi submit thì Register nhận được sẽ kiểm tra tất cả các dữ liệu được nhập vào.
+        /// ValidateAntiForgeryToken: chống giả mạo một request không phải từ chính website
         /// </summary>
         /// <param name="returnUrl">/Account/Register</param>
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        // chống giả mạo một request không phải từ chính website
-        // cơ chế là khi gửi request Post lên nó sẽ kiểm tra token có tồn tại hay không. Nếu cookie bị thiếu hoặc giá trị không đúng thị nó sẽ không xử lý request này
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(User model, string? returnUrl = null)
+        public async Task<IActionResult> Register(UserInfo model, string? returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
             ViewData["ReturnUrl"] = returnUrl;
 
-            // Kiểm tra xem có trường thông tin nào không hợp lệ hay không xác thực
             if (ModelState.IsValid)
             {
                 var userName = model.Email.Substring(0, model.Email.LastIndexOf('@'));
+                var user = new UserInfo
+                {
+                    UserName = userName,
+                    Email = model.Email,
+                    SchoolID = model.SchoolID,
+                    FacultID = model.FacultID,
+                    ClassID = model.ClassID,
+                    RoleName = model.RoleName
+                };
 
-                // lấy danh sách user
-                var user = new User { UserName = userName, Email = model.Email, SchoolID = model.SchoolID, ConfirmPassword = model.ConfirmPassword};
-                // trả về đối tượng IdentityResult
+                /* trả về đối tượng resultIdentity */
                 var result = await _userManager.CreateAsync(user, model.Password);
-                var listUsers = _eTrainingDbContext.Users?.ToList() ?? new List<User>();
-
-
-                // Nếu mà thêm thành công
                 if (result.Succeeded)
                 {
-                    if (listUsers.Count == 1)
+                    /* Chưa có ai đăng ký => gán quyền Admin */
+                    if (model.SchoolID == null)
                     {
-                        // check xem các Role Admin, User, Student, Teacher đã tồn tại hay chưa
+                        /* Khi chưa có Admin nên chưa tồn tại quyền nào thì tạo ra quyền Admin rồi gán cho user hiện tại */
                         await _roleManager.CreateAsync(new IdentityRole(RoleType.Admin));
+                        user.RoleName = RoleType.Admin;
                         await _userManager.AddToRoleAsync(user, RoleType.Admin);
                     }
-
-                    // phát sinh Token dựa theo thông tin của User để xác thực Email
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    // convert Token thành Encode để đính kèm trên Url
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-
-                    // Url sẽ có dạng một cách đầy đủ như sau: https://localhost:5001/Identity/Account/ConfirmEmail?userId=giá trị&code=giá trị&returnUrl=
-                    // Nếu mà thiết lập đường dẫn ở bên front end thì đường dẫn Url sẽ có dạng: https://localhost:5001/confirm-email?userId=giá trị&code=giá trị&returnUrl=
-                    var callbackUrl = Url.Page(
-                        // thiết lập gọi đến trang ConfirmEmail
-                        "/Account/ConfirmEmail", pageHandler: null,
-                        values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl }, protocol: Request.Scheme);
-
-                    
-
-                    // if mà yêu cầu xác nhận tài khoản trước khi đăng nhập thì sẽ chuyển hướng sang trang RegisterConfirmation
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount) // mặc định giá trị của RequireConfirmedAccount là false
+                    user.SchoolID = model.SchoolID;
+                    user.FacultID = model.FacultID;
+                    user.ClassID = model.ClassID;
+                    /* Yêu cầu xác thực tài khoản: Giá trị RequireConfirmedAccount = false mặc định */
+                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
-                        return RedirectToAction("RegisterConfirmation", new { email = model.Email, returnUrl = returnUrl });
+                        return RedirectToAction("RegisterConfirmation",
+                            new { email = model.Email, returnUrl = returnUrl });
                     }
                     else
                     {
-                        // không cần phải xác nhận mà đăng nhập luôn
-                        // nếu để isPersistent: true thì lần sau khi truy cập vào sẽ không cần phải đăng nhập lại, thông tin tài khoản sẽ được lưu ở cookie
+                        /* isPersistent: false không cần đăng nhập lại, thông tin được lưu ở Cookie */
                         await _signInManager.SignInAsync(user, isPersistent: false);
                         return LocalRedirect(returnUrl);
                     }
                 }
-                // đưa lỗi thêm user và ModelState để hiển thị ở html heleper
+                /* Đưa Errors vào ModelState hiển thị ở html helper */
                 foreach (var error in result.Errors)
                 {
-                    // thêm một message lỗi cụ thể vào danh sách Errors với 1 key
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
@@ -175,61 +156,66 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// <summary>
         /// Thực hiện nhập các thông tin => đăng nhập
         /// </summary>
-        /// <param name="loginModel">model chứa các thông tin được nhập vào</param>
+        /// <param name="model">model chứa các thông tin được nhập vào</param>
         /// <param name="returnUrl"></param>
         /// <returns></returns>
         [HttpPost("/login/")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginModel loginModel, string? returnUrl = null)
+        public async Task<IActionResult> Login(LoginModel model, string? returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
             ViewData["ReturnUrl"] = returnUrl;
-            // Nếu người dùng đã login rồi thì trả về trang Index
+
+            /* Kiểm tra nếu user đăng nhập rồi thì chuyển đến index */
             if (_signInManager.IsSignedIn(User))
             {
                 return Redirect("Index");
             }
-
+            /* Check xem thông tin model có hợp lệ hay không */
             if (ModelState.IsValid)
             {
-                // đặt lockoutOnFailure: true cho phép kích hoạt khóa tài khoản khi lỗi mật khẩu quá số lần
-                var resultLogin = await _signInManager.PasswordSignInAsync(
-                        loginModel.Email.Substring(0, loginModel.Email.LastIndexOf('@')), loginModel.Password, loginModel.RememberMe, lockoutOnFailure: true);
+                /* lấy tên user */
+                var userName = model.Email.Substring(0, model.Email.LastIndexOf('@'));
+                /* lockoutOnFailure: true kích hoạt khóa tài khoản khi nhập sai quá số lần */
+                var result = await _signInManager.PasswordSignInAsync(userName, model.Password,
+                    model.RememberMe, lockoutOnFailure: true);
 
-                // Nếu như tài khoản đăng nhập nhập sai quá 3 lần
-                if (resultLogin.IsLockedOut)
+                /* Nhập sai quá 3 lần thì chuyển đến Lockout */
+                if (result.IsLockedOut)
                 {
                     return View("Lockout");
                 }
 
-                // Nếu login không thành công
-                if (!resultLogin.Succeeded)
+                /* Login không thành công*/
+                if (!result.Succeeded)
                 {
-                    // tìm thông tin user theo email
-                    var user = await _userManager.FindByEmailAsync(loginModel.Email);
-                    //Nếu user tồn tại
+                    /* Lấy thông tin user theo Email */
+                    var user = await _userManager.FindByEmailAsync(model.Email);
                     if (user != null)
                     {
-                        resultLogin = await _signInManager.PasswordSignInAsync(user, loginModel.Password, loginModel.RememberMe, lockoutOnFailure: true);
+                        result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
                     }
                 }
-                if (resultLogin.Succeeded)
+                if (result.Succeeded)
                 {
-                    // ghi vào log là đã đăng nhập thành công và Redire vào trang tương ứng
                     return Redirect(returnUrl);
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Không đăng nhập được");
-                    return View(loginModel);
+                    ModelState.AddModelError(string.Empty, "Đăng nhập không thành công");
+                    return View(model);
                 }
             }
-            return View(loginModel);
+            return View(model);
         }
         #endregion
 
         #region Truy cập bị từ chối
+        /// <summary>
+        /// Khi không đủ quyền thì sẽ trả về trang này
+        /// </summary>
+        /// <returns></returns>
         [AllowAnonymous]
         [HttpGet]
         public IActionResult AccessDenied()
@@ -253,6 +239,41 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             Response.Cookies.Delete("aspToken");
             return RedirectToAction("Index", "Home", new { area = "" });
 
+        }
+        #endregion
+        #region Trả về kết quả lọc dữ liệu select
+        public ActionResult GetFacult(string SchoolID)
+        {
+            if (!string.IsNullOrEmpty(SchoolID))
+            {
+                List<SelectListItem> facultJson = _context.FacultET
+                    .Where(c => c.SchoolID.ToString() == SchoolID)
+                    .OrderBy(m => m.Name)
+                    .Select(n => new SelectListItem
+                    {
+                        Value = n.ID.ToString(),
+                        Text = n.Name
+                    }).ToList();
+                return Json(facultJson);
+            }
+            return null;
+        }
+
+        public ActionResult GetClass(string FacultID)
+        {
+            if (!string.IsNullOrEmpty(FacultID))
+            {
+                List<SelectListItem> classJson = _context.ClassET
+                    .Where(c => c.FacultID.ToString() == FacultID)
+                    .OrderBy(m => m.Name)
+                    .Select(n => new SelectListItem
+                    {
+                        Value = n.ID.ToString(),
+                        Text = n.Name
+                    }).ToList();
+                return Json(classJson);
+            }
+            return null;
         }
         #endregion
     }

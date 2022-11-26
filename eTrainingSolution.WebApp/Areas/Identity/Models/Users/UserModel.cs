@@ -27,7 +27,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Models.Users
         public List<UserAndRole>? users { get; set; }
     }
 
-    public class UserAndRole : User
+    public class UserAndRole : UserInfo
     {
         public string? RoleName { get; set; }
     }

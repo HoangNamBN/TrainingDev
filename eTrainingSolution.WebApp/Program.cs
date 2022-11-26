@@ -12,7 +12,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 // đăng ký eTrainingDbContext sử dụng kết nối đến SQL Server
-builder.Services.AddDbContext<eTrainingDbContext>(options =>
+builder.Services.AddDbContext<DB_Context>(options =>
 {
     string strConnect = builder.Configuration.GetConnectionString("eTrainingConnection");
     options.UseSqlServer(strConnect, b => b.MigrationsAssembly("eTrainingSolution.DbMigrator"));
@@ -21,7 +21,7 @@ builder.Services.AddDbContext<eTrainingDbContext>(options =>
     Đăng ký các dịch vụ Identity với cấu hình mặc định cho User và Role
     Thêm Token Provider để phát sinh mã token khi mà reset mật khẩu, confirm email, ...
  */
-builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<eTrainingDbContext>()
+builder.Services.AddIdentity<UserInfo, IdentityRole>().AddEntityFrameworkStores<DB_Context>()
     .AddDefaultTokenProviders().AddDefaultUI().AddRoles<IdentityRole>();
 // truy cập IdentityOptions
 builder.Services.Configure<IdentityOptions>(options =>

@@ -12,25 +12,25 @@
     <table class="table table-bordered table-hover table-responsive">
         <thead>
             <tr class="text-center text-white bg-dark">
-                <th>@Html.DisplayNameFor(model => model.SchoolName)</th>
+                <th>@Html.DisplayNameFor(model => model.Name)</th>
                 <th>@Html.DisplayNameFor(model => model.Address)</th>
                 <th>@Html.DisplayNameFor(model => model.CreateDate)</th>
-                <th>@Html.DisplayNameFor(model => model.CapacityOfTheSchool)</th>
+                <th>@Html.DisplayNameFor(model => model.Capacity)</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>@Html.DisplayFor(model => model.SchoolName)</td>
+                <td>@Html.DisplayFor(model => model.Name)</td>
                 <td>@Html.DisplayFor(model => model.Address)</td>
                 <td class="text-center">@Html.DisplayFor(model => model.CreateDate)</td>
-                <td class="text-center">@Html.DisplayFor(model => model.CapacityOfTheSchool)</td>
+                <td class="text-center">@Html.DisplayFor(model => model.Capacity)</td>
             </tr>
         </tbody>
     </table>
 </div>
 <div>
     <form asp-action="Delete">
-        <input type="submit" asp-route-id="@Model?.Id" class="btn btn-danger btn-sm" value="Delete" />
+        <input type="submit" asp-route-id="@Model?.ID" class="btn btn-danger btn-sm" value="Delete" />
         <a asp-action="Index" class="btn btn-primary btn-sm">Quay lại</a>
     </form>
 </div>

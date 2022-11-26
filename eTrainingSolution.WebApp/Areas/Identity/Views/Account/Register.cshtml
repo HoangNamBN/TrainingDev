@@ -3,9 +3,9 @@
 @using eTrainingSolution.WebApp.Areas.Identity.Models.Account;
 
 
-@model User;
+@model UserInfo;
 @*inject để quản lý việc đăng nhập, đăng ký*@
-@inject SignInManager<User> SignInManager; 
+@inject SignInManager<UserInfo> SignInManager; 
 
 @*Thiết lập title cho trang*@
 @{
@@ -55,10 +55,28 @@
                 <div class="form-group">
                     <label asp-for="SchoolID" class="control-label"></label>
                     <div class="col-md-10">
-                        <select asp-for="SchoolID" class="form-control" asp-items="ViewBag.SchoolID" id="select-school">
+                        <select id="ddlSchool" asp-for="SchoolID" class="form-control" asp-items="ViewBag.SchoolID">
                             <option>Chọn trường học</option>
                         </select>
                         <span class="text-danger" asp-validation-for="SchoolID"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="FacultID" class="control-label"></label>
+                    <div class="col-md-10">
+                        <select id="ddlFacult" asp-for="FacultID" class="form-control" asp-items="ViewBag.FacultID">
+                            <option>Chọn Khoa theo học</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="FacultID"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ClassID" class="control-label"></label>
+                    <div class="col-md-10">
+                        <select id="ddlClass" asp-for="ClassID" class="form-control" asp-items="ViewBag.ClassID">
+                            <option>Chọn lớp theo học</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="ClassID"></span>
                     </div>
                 </div>
                 <div class="form-group">
@@ -93,7 +111,7 @@
                                     <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
                                 }
                             </p>
-                        </div>
+                        </div>  
                     </form>
                 }
             }
@@ -102,4 +120,45 @@
 </div>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#ddlSchool').change(function(){
+                var sltSchool = $('#ddlSchool').val();
+                var sltFacult = $('#ddlFacult');
+                sltFacult.empty();
+
+                if(sltSchool != null && sltSchool !="")
+                {
+                    $.getJSON('@Url.Action("GetFacult")', { SchoolID: sltSchool}, function(facultJson){
+                        if (facultJson != null && !jQuery.isEmptyObject(facultJson)) {
+                            $.each(facultJson, function(a, b){
+                                sltFacult.append($('<option>', {
+                                    value: b.value,
+                                    text: b.text
+                                }));
+                            });
+                        };
+                    });
+                }
+            })
+            $('#ddlFacult').change(function () {
+                var sltFacult = $('#ddlFacult').val();
+                var sltClass = $('#ddlClass');
+                sltClass.empty();
+
+                if (sltFacult != null && sltFacult != "") {
+                    $.getJSON('@Url.Action("GetClass")', { FacultID: sltFacult }, function (classJson) {
+                        if (classJson != null && !jQuery.isEmptyObject(classJson)) {
+                            $.each(classJson, function (a, b) {
+                                sltClass.append($('<option>', {
+                                    value: b.value,
+                                    text: b.text
+                                }));
+                            });
+                        };
+                    });
+                }
+            })
+        });
+    </script>
 }

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
@@ -14,11 +13,11 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 {
     [Area("Identity")]
     [Route("/User/[action]")]
-    public class UserController : BaseController
+    public class UserController : PublicController
     {
         #region Khai báo các dịch vụ sử dụng
-        public UserController(SignInManager<User> signInManager, UserManager<User> userManager, eTrainingDbContext eTrainingDbContext,
-            RoleManager<IdentityRole> roleManager) : base(signInManager, userManager, eTrainingDbContext, roleManager)
+        public UserController(SignInManager<UserInfo> signInManager, UserManager<UserInfo> userManager, DB_Context context, RoleManager<IdentityRole> roleManager)
+            : base(signInManager, userManager, context, roleManager)
         {
         }
         #endregion
@@ -46,14 +45,10 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 
             // Nếu mà trang hiện tại < 1 thì gán cho nó là trang thứ nhất 
             if (model.currentPage < 1)
-            {
                 model.currentPage = 1;
-            }
             // Nếu mà trang hiện tại lớn hơn tổng số trang thì gán cho nó là trang cuối cùng
             if (model.currentPage > model.countPages)
-            {
                 model.currentPage = model.countPages;
-            }
 
             // skip ví dụ crrentPage là trang số 1 thì sẽ skip 0 phần tử, bỏ ra các phần tử đầu tiên và lấy ra số phần tử ITEM_PER_PAGE
             // trả về một đối tượng mới là UserAndRole
@@ -91,16 +86,11 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             var addRoleForUser = new AddRoleForUser();
             if (string.IsNullOrEmpty(roleID))
             {
-                return NotFound("Không tìm thấy sự tồn tại của user!");
+                return NotFound(Default.NotificationRole);
             }
             // tìm user theo id
             addRoleForUser.user = await _userManager.FindByIdAsync(roleID);
-            // nếu mà không tìm thấy user
-            if(addRoleForUser.user == null)
-            {
-                return NotFound("Không tìm thấy sự tồn tại của user");
-            }
-            // lấy ra tên quyền theo user có hiện tại
+
             addRoleForUser.RoleNames = (await _userManager.GetRolesAsync(addRoleForUser.user)).ToArray<string>();
 
             // lấy ra danh sách các role và lấy ra tên của role
@@ -114,16 +104,11 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         [HttpPost("{roleid}")]
         public async Task<IActionResult> AddRoleAsync(string roleID, [Bind("RoleNames")] AddRoleForUser addRoleForUser)
         {
-            if(string.IsNullOrEmpty(roleID))
+            if (string.IsNullOrEmpty(roleID))
             {
-                return NotFound("Không tìm thấy sự tồn tại của user");
+                return NotFound(Default.NotificationRole);
             }
             addRoleForUser.user = await _userManager.FindByIdAsync(roleID);
-
-            if(addRoleForUser.user == null)
-            {
-                return NotFound("Không tìm thấy sự tồn tại của user");
-            }
             // lấy ra 1 mảng các role mà user hiện tại đang có
             var roleNamesCurrent = (await _userManager.GetRolesAsync(addRoleForUser.user)).ToArray();
 
@@ -147,19 +132,19 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             }
 
             // lấy ra danh sách user
-            var userDbContext = _eTrainingDbContext.Users.ToList();
+            var userDbContext = _context.UserET.ToList();
 
             foreach (var user in userDbContext)
             {
                 // lấy ra quyền hiện tại của user
                 var role = await _userManager.GetRolesAsync(user);
-                for(int i = 0; i < role.Count; i++)
+                for (int i = 0; i < role.Count; i++)
                 {
                     if (role[i] == RoleType.Admin)
                     {
                         foreach (var roleName in roleUpdate)
                         {
-                            if(roleName != RoleType.Admin)
+                            if (roleName != RoleType.Admin)
                             {
                                 var resultOfAddRoles = await _userManager.AddToRolesAsync(addRoleForUser.user, roleUpdate);
                                 if (!resultOfAddRoles.Succeeded)
@@ -189,7 +174,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
-        
+
         #endregion
     }
 }

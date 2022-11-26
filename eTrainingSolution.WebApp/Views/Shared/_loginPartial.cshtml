@@ -2,9 +2,9 @@
 @using eTrainingSolution.EntityFrameworkCore.Entities
 
 @*quản lý việc đăng nhập*@
-@inject SignInManager<User> SignInManger
+@inject SignInManager<UserInfo> SignInManger
 @*quản lý user: thêm, sửa, xóa*@
-@inject UserManager<User> UserManager 
+@inject UserManager<UserInfo> UserManager 
 
 <ul class="navbar-nav">
     @*asp-area="Identity" asp-page="/Account/Manage/Index" để thiết lập nó nằm ở trong thư mục Areas*@

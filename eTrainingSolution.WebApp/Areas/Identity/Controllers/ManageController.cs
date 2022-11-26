@@ -1,5 +1,6 @@
 ﻿using eTrainingSolution.EntityFrameworkCore;
 using eTrainingSolution.EntityFrameworkCore.Entities;
+using eTrainingSolution.Shared;
 using eTrainingSolution.WebApp.Areas.Identity.Models.Account.Manage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -10,11 +11,11 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 {
     [Area("Identity")]
     [Route("/Manage/[action]")]
-    public class ManageController : BaseController
+    public class ManageController : PublicController
     {
         #region Khai báo các dịch vụ cần sử dụng
-        public ManageController(SignInManager<User> signInManager, UserManager<User> userManager, eTrainingDbContext eTrainingDbContext,
-            RoleManager<IdentityRole> roleManager) : base(signInManager, userManager, eTrainingDbContext, roleManager)
+        public ManageController(SignInManager<UserInfo> signInManager, UserManager<UserInfo> userManager, DB_Context context, RoleManager<IdentityRole> roleManager)
+            : base(signInManager, userManager, context, roleManager)
         {
         }
         #endregion
@@ -29,12 +30,12 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 
         #endregion
 
-            #region Load thông tin user vào model
+        #region Load thông tin user vào model
 
-        public async Task LoadAsync(User user, bool isUpdate = false)
+        public async Task LoadAsync(UserInfo user, bool isUpdate = false)
         {
             var userName = await _userManager.GetUserNameAsync(user);
-            if(isUpdate == true)
+            if (isUpdate == true)
             {
                 profileModel = new ProfileModel
                 {
@@ -69,17 +70,9 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             // lấy thông tin user đang đăng nhập
             var user = await _userManager.GetUserAsync(User);
 
-            if(user == null) {
-                return NotFound("Không tìm thấy sự tồn tại của user");
-            }
-            if(isUpdate == true)
-            {
-                await LoadAsync(user, true);
-            }
-            else
-            {
-                await LoadAsync(user, false);
-            }
+            if (user == null) return NotFound(Default.NotificationRole);
+            if (isUpdate == true) await LoadAsync(user, true);
+            else await LoadAsync(user, false);
 
             return View(profileModel);
         }
@@ -95,9 +88,9 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 
             if (user == null)
             {
-                return NotFound("Không tìm thấy sự tồn tại của user");
+                return NotFound(Default.NotificationRole);
             }
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 await LoadAsync(user);
                 return RedirectToAction(nameof(Index));
@@ -133,7 +126,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             }
             // đăng nhập lại để làm mới Cookie => không nhớ thông tin cũ
             await _signInManager.RefreshSignInAsync(user);
-            return RedirectToAction(nameof(Index), new {isUpdate = isUpdateSuccess });
+            return RedirectToAction(nameof(Index), new { isUpdate = isUpdateSuccess });
         }
         #endregion
 
@@ -146,9 +139,9 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             // lấy thông tin của user
             var user = await _userManager.GetUserAsync(User);
 
-            if(user== null)
+            if (user == null)
             {
-                return NotFound("Không tìm thấy sự tồn tại của user");
+                return NotFound(Default.NotificationRole);
             }
             return View(changePassModel);
         }
@@ -156,7 +149,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdatePassword(ChangePassModel changePassModel)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return View();
             }
@@ -165,7 +158,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 
             if (user == null)
             {
-                return NotFound("Không tìm thấy sự tồn tại của user");
+                return NotFound(Default.NotificationRole);
             }
 
             var changePassword = await _userManager.ChangePasswordAsync(user, changePassModel.OldPassword, changePassModel.NewPassword);
@@ -182,6 +175,5 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             return RedirectToAction(nameof(Index));
         }
         #endregion
-
     }
 }

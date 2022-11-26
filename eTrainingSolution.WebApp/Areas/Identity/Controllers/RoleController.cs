@@ -10,11 +10,11 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 {
     [Area("Identity")]
     [Route("/Role/[action]")]
-    public class RoleController : BaseController
+    public class RoleController : PublicController
     {
         #region Khai báo các dịch vụ sử dụng
-        public RoleController(SignInManager<User> signInManager, UserManager<User> userManager, eTrainingDbContext eTrainingDbContext,
-            RoleManager<IdentityRole> roleManager) : base(signInManager, userManager, eTrainingDbContext, roleManager)
+        public RoleController(SignInManager<UserInfo> signInManager, UserManager<UserInfo> userManager, DB_Context context, RoleManager<IdentityRole> roleManager)
+            : base(signInManager, userManager, context, roleManager)
         {
         }
         #endregion
@@ -51,11 +51,11 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         [Authorize(Roles = RoleType.Admin)]
         [HttpPost, ActionName("Create")]
         [AutoValidateAntiforgeryToken]
-        public async Task<IActionResult> CreateAsync(AddRoleModel modelRole)
+        public async Task<IActionResult> CreateAsync(RoleModel modelRole)
         {
             if (ModelState.IsValid)
             {
-                var newRole = new IdentityRole(modelRole.RoleName);
+                var newRole = new IdentityRole(modelRole.Name);
                 var result = await _roleManager.CreateAsync(newRole);
                 if (result.Succeeded)
                 {
@@ -66,7 +66,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
-            return View(modelRole);
+            return View();
         }
 
         #endregion
@@ -74,37 +74,28 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         #region Xóa role
 
         [Authorize(Roles = RoleType.Admin)]
-        [HttpGet("{roleid}")]
+        [HttpGet("{roleID}")]
         public async Task<IActionResult> DeleteAsync(string roleID)
         {
             if (roleID == null)
             {
-                return NotFound("Không tìm thấy vai trò");
+                return NotFound(Default.NotificationRole);
             }
             var role = await _roleManager.FindByIdAsync(roleID);
-            if (role == null)
-            {
-                return NotFound("Không tìm thấy Role");
-            }
             return View(role);
         }
 
 
         [Authorize(Roles = RoleType.Admin)]
         [AutoValidateAntiforgeryToken]
-        [HttpPost("{roleid}"), ActionName("Delete")]
+        [HttpPost("{roleID}"), ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmAsync(string roleID)
         {
             if (roleID == null)
             {
-                return NotFound("Không tìm thấy role");
+                return NotFound(Default.NotificationRole);
             }
             var role = await _roleManager.FindByIdAsync(roleID);
-
-            if (role == null)
-            {
-                return NotFound("Không tim thấy role");
-            }
             var result = await _roleManager.DeleteAsync(role);
             if (result.Succeeded)
             {
@@ -121,49 +112,41 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// 
         /// </summary>
         /// <param name="roleID">id role được truyền vào từ object ở trang trước đó</param>
-        /// <param name="editRole">model</param>
+        /// <param name="model">model</param>
         /// <returns></returns>
-        [HttpGet("{roleid}")]
+        [HttpGet("{roleID}")]
         [Authorize(Roles = RoleType.Admin)]
-        public async Task<IActionResult> EditAsync(string roleID, [Bind("RoleName")] EditRoleModel editRole)
+        public async Task<IActionResult> EditAsync(string roleID, [Bind("Name")] RoleModel model)
         {
             if (roleID == null)
             {
-                return NotFound("Không tìm thấy role");
+                return NotFound(Default.NotificationRole);
             }
             // tìm kiếm role
             var role = await _roleManager.FindByIdAsync(roleID);
-            if (role == null)
-            {
-                return NotFound("Không tìm thấy role");
-            }
-            editRole.RoleName = role.Name;
+            model.Name = role.Name;
             ModelState.Clear();
-            return View(editRole);
+            return View(model);
         }
 
         [AutoValidateAntiforgeryToken]
         [Authorize(Roles = RoleType.Admin)]
-        [HttpPost("{roleid}"), ActionName("Edit")]
-        public async Task<IActionResult> EditConfirmAsync(string roleID, [Bind("RoleName")] EditRoleModel editRole)
+        [HttpPost("{roleID}"), ActionName("Edit")]
+        public async Task<IActionResult> EditConfirmAsync(string roleID, [Bind("Name")] RoleModel model)
         {
             if (roleID == null)
             {
-                return NotFound("Không tìm thấy role");
+                return NotFound(Default.NotificationRole);
             }
             var role = await _roleManager.FindByIdAsync(roleID);
-            if (role == null)
-            {
-                return NotFound("Không tìm thấy role");
-            }
-            role.Name = editRole.RoleName;
+            role.Name = model.Name;
             var result = await _roleManager.UpdateAsync(role);
             if (result.Succeeded)
             {
                 return RedirectToAction(nameof(Index));
             }
             ModelState.AddModelError(string.Empty, "Không sửa được role");
-            return View(editRole);
+            return View(model);
         }
 
         #endregion
