@@ -26,20 +26,20 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         [Authorize(Roles = RoleType.Admin_Manage)]
         public async Task<IActionResult> Index(string search)
         {
-            UserInfo user = await getUserET();
+            if (!string.IsNullOrEmpty(search))
+            {
+                var schoolSearch = from school in _context.SchoolET select school;
+                schoolSearch = schoolSearch.Where(x => x.Name.Contains(search));
+                return View(await schoolSearch.OrderBy(m => m.Name).ToListAsync());
+            }
             bool isAdmin = await IsAdmin();
             if (!isAdmin)
             {
+                UserInfo user = await getUserET();
                 var schoolDB = _context.SchoolET.Where(m => m.ID == user.SchoolID);
                 return View(await schoolDB.ToListAsync());
             }
             ViewBag.isAdmin = "Admin";
-            var schoolSearch = from school in _context.SchoolET select school;
-            if (!string.IsNullOrEmpty(search))
-            {
-                schoolSearch = schoolSearch.Where(x => x.Name.Contains(search));
-                return View(await schoolSearch.OrderBy(m => m.Name).ToListAsync());
-            }
             return View(await _context.SchoolET.OrderBy(m => m.Name).ToListAsync());
         }
 

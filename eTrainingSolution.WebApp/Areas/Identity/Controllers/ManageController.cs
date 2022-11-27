@@ -5,7 +5,6 @@ using eTrainingSolution.WebApp.Areas.Identity.Models.Account.Manage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Text;
 
 namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 {
@@ -22,10 +21,10 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 
         #region Khai báo Model
 
-        [BindProperty]
+        //[BindProperty]
         public ProfileModel profileModel { get; set; }
 
-        [BindProperty]
+        //[BindProperty]
         public ChangePassModel changePassModel { get; set; }
 
         #endregion
@@ -34,12 +33,11 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 
         public async Task LoadAsync(UserInfo user, bool isUpdate = false)
         {
-            var userName = await _userManager.GetUserNameAsync(user);
             if (isUpdate == true)
             {
                 profileModel = new ProfileModel
                 {
-                    UserName = userName,
+                    UserName = user.UserName,
                     Phone = user.PhoneNumber,
                     Birthday = user.DateOfBirth,
                     Address = user.Address,
@@ -51,7 +49,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             {
                 profileModel = new ProfileModel
                 {
-                    UserName = userName,
+                    UserName = user.UserName,
                     Phone = user.PhoneNumber,
                     Birthday = user.DateOfBirth,
                     Address = user.Address,
@@ -70,8 +68,14 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             // lấy thông tin user đang đăng nhập
             var user = await _userManager.GetUserAsync(User);
 
-            if (user == null) return NotFound(Default.NotificationRole);
-            if (isUpdate == true) await LoadAsync(user, true);
+            if (user == null)
+            {
+                return NotFound(Default.NotificationRole);
+            }
+            if (isUpdate == true)
+            {
+                await LoadAsync(user, true);
+            }
             else await LoadAsync(user, false);
 
             return View(profileModel);
@@ -80,9 +84,10 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 
         #region Update hồ sơ cá nhân
         [HttpPost]
-        public async Task<IActionResult> Update()
+        public async Task<IActionResult> Update(ProfileModel profileModel)
         {
-            var isUpdateSuccess = false;
+            bool checkUpdate = false;
+
             // lấy thông tin user đang đăng nhập
             var user = await _userManager.GetUserAsync(User);
 
@@ -95,9 +100,6 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                 await LoadAsync(user);
                 return RedirectToAction(nameof(Index));
             }
-            // check xem có trường dữ liệu nào thay đổi hay không
-            StringBuilder infoUser = new StringBuilder();
-            infoUser.Append(user.Address + "-" + user.FullName + "-" + user.PhoneNumber + "-" + user.DateOfBirth.ToString());
 
             // Check tính hợp lệ của số điện thoại
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
@@ -115,18 +117,12 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             user.FullName = profileModel.FullName;
             user.PhoneNumber = profileModel.Phone;
             user.DateOfBirth = profileModel.Birthday;
+
             await _userManager.UpdateAsync(user);
-
-            StringBuilder infoUserCompare = new StringBuilder();
-            infoUserCompare.Append(user.Address + "-" + user.FullName + "-" + user.PhoneNumber + "-" + user.DateOfBirth.ToString());
-
-            if (!infoUser.Equals(infoUserCompare))
-            {
-                isUpdateSuccess = true;
-            }
+            checkUpdate = true;
             // đăng nhập lại để làm mới Cookie => không nhớ thông tin cũ
             await _signInManager.RefreshSignInAsync(user);
-            return RedirectToAction(nameof(Index), new { isUpdate = isUpdateSuccess });
+            return RedirectToAction(nameof(Index), new { isUpdate = checkUpdate });
         }
         #endregion
 

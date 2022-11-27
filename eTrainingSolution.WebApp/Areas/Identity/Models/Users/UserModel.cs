@@ -24,11 +24,6 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Models.Users
         /// </summary>
         public int currentPage { get; set; }
 
-        public List<UserAndRole>? users { get; set; }
-    }
-
-    public class UserAndRole : UserInfo
-    {
-        public string? RoleName { get; set; }
+        public List<UserInfo>? users { get; set; }
     }
 }

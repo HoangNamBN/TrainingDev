@@ -51,11 +51,11 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         [Authorize(Roles = RoleType.Admin)]
         [HttpPost, ActionName("Create")]
         [AutoValidateAntiforgeryToken]
-        public async Task<IActionResult> CreateAsync(RoleModel modelRole)
+        public async Task<IActionResult> CreateAsync(RoleModel model)
         {
             if (ModelState.IsValid)
             {
-                var newRole = new IdentityRole(modelRole.Name);
+                var newRole = new IdentityRole(model.Name);
                 var result = await _roleManager.CreateAsync(newRole);
                 if (result.Succeeded)
                 {
@@ -96,6 +96,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                 return NotFound(Default.NotificationRole);
             }
             var role = await _roleManager.FindByIdAsync(roleID);
+
             var result = await _roleManager.DeleteAsync(role);
             if (result.Succeeded)
             {
@@ -124,6 +125,10 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             }
             // tìm kiếm role
             var role = await _roleManager.FindByIdAsync(roleID);
+            if (role.Name == RoleType.Admin)
+            {
+                return RedirectToAction(nameof(Index));
+            }
             model.Name = role.Name;
             ModelState.Clear();
             return View(model);

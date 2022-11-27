@@ -1,6 +1,4 @@
-﻿using eTrainingSolution.EntityFrameworkCore.Validation.CreateDate;
-using eTrainingSolution.Shared;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
 namespace eTrainingSolution.WebApp.Areas.Identity.Models.Account.Manage
@@ -13,7 +11,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Models.Account.Manage
         [Display(Name = "Tên người dùng")]
         public string? UserName { get; set; }
 
-        [Phone(ErrorMessage ="{0} sai định dạng")]
+        [Phone(ErrorMessage = "{0} sai định dạng")]
         [Display(Name = "Số điện thoại")]
         public string? Phone { get; set; }
 
@@ -26,10 +24,19 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Models.Account.Manage
         public string? Address { get; set; }
 
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Ngày sinh")]
         //[ModelBinder(BinderType =typeof(ConvertDateTime))]
         public DateTime? Birthday { get; set; }
+
+        ///// <summary>
+        ///// File dùng để Upload thông tin
+        ///// </summary>
+        //[Display(Name = "Ảnh cá nhân")]
+        //[Required(ErrorMessage = "File ảnh user không được để trống")]
+        //[DataType(DataType.Upload)]
+        //[FileExtensions(Extensions = "png, jpg, jpeg, gif")]
+        //public IFormFile? FileUpload { get; set; }
 
         [TempData]
         public string? StatusMessage { get; set; }

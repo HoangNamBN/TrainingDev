@@ -12,6 +12,7 @@ namespace eTrainingSolution.EntityFrameworkCore.Configuration
         /// <param name="builder"></param>
         public void Configure(EntityTypeBuilder<UserInfo> builder)
         {
+            builder.ToTable("UserInfo");
             // cấu hình khóa ngoại
             builder.HasOne(x => x.Classrooms).WithMany(g => g.Users);
             builder.HasOne(x => x.Schools).WithMany(g => g.Users);

@@ -26,21 +26,21 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(string search)
         {
-            UserInfo user = await getUserET();
+            if (!string.IsNullOrEmpty(search))
+            {
+                var lstClass = from c in _context.ClassET select c;
+                lstClass = lstClass.Where(m => (m.Facults.Name.Contains(search) || m.Schools.Name.Contains(search)));
+                return View(await lstClass.Include(m => m.Schools).Include(m => m.Facults).OrderBy(m => m.Name).ToListAsync());
+            }
             bool isAdmin = await IsAdmin();
             if (isAdmin != true)
             {
+                UserInfo user = await getUserET();
                 var classDB = _context.ClassET.Include(f => f.Facults).Include(f => f.Schools).Where(m => m.SchoolID == user.SchoolID);
                 return View(await classDB.OrderBy(m => m.Name).ToListAsync());
 
             }
             ViewBag.isAdmin = "Admin";
-            var lstClass = from c in _context.ClassET select c;
-            if (!string.IsNullOrEmpty(search))
-            {
-                lstClass = lstClass.Where(m => (m.Facults.Name.Contains(search) || m.Schools.Name.Contains(search)));
-                return View(await lstClass.Include(m => m.Schools).Include(m => m.Facults).OrderBy(m => m.Name).ToListAsync());
-            }
             return View(await _context.ClassET.Include(m => m.Schools).Include(m => m.Facults).OrderBy(m => m.Name).ToListAsync());
         }
 
@@ -52,10 +52,10 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         [Authorize(Roles = RoleType.Admin_Manage)]
         public async Task<IActionResult> Create()
         {
-            UserInfo user = await getUserET();
             bool isAdmin = await IsAdmin();
             if (isAdmin != true)
             {
+                UserInfo user = await getUserET();
                 ViewData["FacultID"] = new SelectList(_context.FacultET.Where(m => m.SchoolID == user.SchoolID), Default.ID, Default.FacultName);
                 ViewData["SchoolID"] = new SelectList(_context.SchoolET.Where(m => m.ID == user.SchoolID), Default.ID, Default.SchoolName);
                 return View();
@@ -110,11 +110,11 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             {
                 return NotFound(Default.NotificationClass);
             }
-            UserInfo user = await getUserET();
             bool isAdmin = await IsAdmin();
             var classDB = await _context.ClassET.FindAsync(id);
             if (isAdmin != true)
             {
+                UserInfo user = await getUserET();
                 ViewData["SchoolID"] = new SelectList(_context.SchoolET.Where(m => m.ID == user.SchoolID), Default.ID, Default.SchoolName);
                 ViewData["FacultID"] = new SelectList(_context.FacultET.Where(m => m.SchoolID == user.SchoolID), Default.ID, Default.FacultName);
                 return View(classDB);
@@ -202,22 +202,6 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                         Text = n.Name
                     }).ToList();
                 return Json(facultJson);
-            }
-            return null;
-        }
-
-        public ActionResult GetClass(string FacultID)
-        {
-            if (!string.IsNullOrEmpty(FacultID))
-            {
-                List<SelectListItem> classJson = _context.ClassET
-                    .Where(c => c.FacultID.ToString() == FacultID).OrderBy(m => m.Name)
-                    .Select(n => new SelectListItem
-                    {
-                        Value = n.ID.ToString(),
-                        Text = n.Name
-                    }).ToList();
-                return Json(classJson);
             }
             return null;
         }

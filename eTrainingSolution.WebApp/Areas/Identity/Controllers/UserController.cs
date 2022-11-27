@@ -53,7 +53,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             // skip ví dụ crrentPage là trang số 1 thì sẽ skip 0 phần tử, bỏ ra các phần tử đầu tiên và lấy ra số phần tử ITEM_PER_PAGE
             // trả về một đối tượng mới là UserAndRole
             var query_new = query.Skip((model.currentPage - 1) * model.ITEM_PER_PAGE).Take(model.ITEM_PER_PAGE)
-                .Select(u => new UserAndRole()
+                .Select(u => new UserInfo()
                 {
                     Id = u.Id,
                     UserName = u.UserName,
@@ -83,94 +83,70 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         [Authorize(Roles = RoleType.Admin)]
         public async Task<IActionResult> AddRoleAsync(string roleID)
         {
-            var addRoleForUser = new AddRoleForUser();
             if (string.IsNullOrEmpty(roleID))
             {
                 return NotFound(Default.NotificationRole);
             }
             // tìm user theo id
-            addRoleForUser.user = await _userManager.FindByIdAsync(roleID);
-
-            addRoleForUser.RoleNames = (await _userManager.GetRolesAsync(addRoleForUser.user)).ToArray<string>();
-
+            var addRole = new AddRoleForUser();
+            addRole.user = await _userManager.FindByIdAsync(roleID);
+            if (addRole.user.RoleName == RoleType.Admin)
+            {
+                return RedirectToAction(nameof(Index));
+            }
             // lấy ra danh sách các role và lấy ra tên của role
             List<string> roleNames = await _roleManager.Roles.Select(r => r.Name).ToListAsync();
             ViewBag.allRoles = new SelectList(roleNames);
-            return View(addRoleForUser);
+            return View(addRole);
         }
 
         [Authorize(Roles = RoleType.Admin)]
         [AutoValidateAntiforgeryToken]
         [HttpPost("{roleid}")]
-        public async Task<IActionResult> AddRoleAsync(string roleID, [Bind("RoleNames")] AddRoleForUser addRoleForUser)
+        public async Task<IActionResult> AddRoleAsync(string roleID, [Bind("RoleNames")] AddRoleForUser model)
         {
             if (string.IsNullOrEmpty(roleID))
             {
                 return NotFound(Default.NotificationRole);
             }
-            addRoleForUser.user = await _userManager.FindByIdAsync(roleID);
-            // lấy ra 1 mảng các role mà user hiện tại đang có
-            var roleNamesCurrent = (await _userManager.GetRolesAsync(addRoleForUser.user)).ToArray();
+            /* Lấy ra role của user hiện tại */
+            model.user = await _userManager.FindByIdAsync(roleID);
+            var roleCurrent = (await _userManager.GetRolesAsync(model.user)).ToArray();
 
-            // So sánh roleNamesCurrent với roleNames nếu mà roles không có các role mà roleNameCurrent hiện tại đang có thì những role đó là những role bị xóa đi
-            var roleDelete = roleNamesCurrent.Where(r => !addRoleForUser.RoleNames.Contains(r));
-            // những role cần thêm vào (tức là những role tồn tại ở RoleNames nhưng không tồn tại ở roleNamesCurrent
-            var roleUpdate = addRoleForUser.RoleNames.Where(e => !roleNamesCurrent.Contains(e));
+            /* Các role cần xóa */
+            var roleDelete = roleCurrent.Where(r => !model.RoleNames.Contains(r));
 
-            // truyền danh sách Role sang cho View 
+            /* Các role cần cập nhật */
+            var roleUpdate = model.RoleNames.Where(e => !roleCurrent.Contains(e));
+
+            /* Truyền danh sách role sang View */
             List<string> roles = await _roleManager.Roles.Select(r => r.Name).ToListAsync();
             ViewBag.allRoles = new SelectList(roles);
 
             // Thực hiện xóa roles
-            var resultOfDeletingRoles = await _userManager.RemoveFromRolesAsync(addRoleForUser.user, roleDelete);
-
-            // Nếu mà xóa không thành công
-            if (!resultOfDeletingRoles.Succeeded)
+            if (roleDelete.Count() != 0)
             {
-                ModelState.AddModelError(string.Empty, "Không thể xóa được role");
-                return View(addRoleForUser);
-            }
-
-            // lấy ra danh sách user
-            var userDbContext = _context.UserET.ToList();
-
-            foreach (var user in userDbContext)
-            {
-                // lấy ra quyền hiện tại của user
-                var role = await _userManager.GetRolesAsync(user);
-                for (int i = 0; i < role.Count; i++)
+                var resultDelete = await _userManager.RemoveFromRolesAsync(model.user, roleDelete);
+                // Nếu mà xóa không thành công
+                if (!resultDelete.Succeeded)
                 {
-                    if (role[i] == RoleType.Admin)
-                    {
-                        foreach (var roleName in roleUpdate)
-                        {
-                            if (roleName != RoleType.Admin)
-                            {
-                                var resultOfAddRoles = await _userManager.AddToRolesAsync(addRoleForUser.user, roleUpdate);
-                                if (!resultOfAddRoles.Succeeded)
-                                {
-                                    var resultRole = await _userManager.AddToRolesAsync(addRoleForUser.user, roleNamesCurrent);
-                                    ViewBag.isSuccess = false;
-                                    return View(addRoleForUser);
-                                }
-                                return RedirectToAction(nameof(Index));
-                            }
-                            else
-                            {
-                                var resultOfAddRoles = await _userManager.AddToRolesAsync(addRoleForUser.user, roleNamesCurrent);
-                                ViewBag.isSuccess = false;
-                                return View(addRoleForUser);
-                            }
-                        }
-                    }
+                    ModelState.AddModelError(string.Empty, "Không thể xóa được role");
+                    return View(model);
                 }
             }
-            var resultAddRolesNotAdmin = await _userManager.AddToRolesAsync(addRoleForUser.user, roleUpdate);
-            if (!resultAddRolesNotAdmin.Succeeded)
+
+            if (roleUpdate.Count() != 0)
             {
-                var resultOfAddRoles = await _userManager.AddToRolesAsync(addRoleForUser.user, roleNamesCurrent);
-                ViewBag.isSuccess = false;
-                return View(addRoleForUser);
+                /* Thực hiện thêm các Role mới */
+                foreach (var role in roleUpdate)
+                {
+                    if (role == RoleType.Admin)
+                    {
+                        ViewBag.isSuccess = false;
+                        return View(model);
+                    }
+                }
+                var resultAdd = await _userManager.AddToRolesAsync(model.user, roleUpdate);
             }
             return RedirectToAction(nameof(Index));
         }

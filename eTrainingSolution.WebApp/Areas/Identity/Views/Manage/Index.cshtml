@@ -14,10 +14,6 @@
     {
         <p class="text-white bg-success">Bạn đã cập nhật hồ sơ thành công</p>
     }
-    //else
-    //{
-    //    <p class="text-danger">Chưa cập nhật thông tin nào của user</p>
-    //}
 }
 
 <div class="row">
@@ -44,10 +40,14 @@
             </div>
             <div class="form-group">
                 <label asp-for="Birthday"></label>
-                @*@Html.TextBoxFor(m => m.Birthday, "{0:dd/MM/yyyy}", new {@class = "form-control"})*@
                 <input asp-for="Birthday" name="Birthday" class="form-control" type="date" />
                 <span asp-validation-for="Birthday" class="text-danger"></span>
             </div>
+@*             <div class="form-group">
+                <label asp-for="FileUpload"></label>
+                <input asp-for="FileUpload" name="FileUpload" class="form-control" type="file" id="file" />
+                <span asp-validation-for="FileUpload" class="text-danger"></span>
+            </div>*@
             <p></p>
             <button asp-action="Update" type="submit" class="btn btn-primary btn-sm">Lưu hồ sơ</button>
         </form>

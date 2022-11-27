@@ -3,7 +3,6 @@ using eTrainingSolution.EntityFrameworkCore.Entities;
 using eTrainingSolution.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 {
@@ -59,21 +58,6 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         public List<UserInfo> GetListUser()
         {
             return _context.UserET?.ToList() ?? new List<UserInfo>();
-        }
-        #endregion
-
-        #region Trả về một danh sách SelectList
-        public SelectList Select_Facult()
-        {
-            return new SelectList(_context.FacultET, Default.ID, Default.FacultName);
-        }
-        public SelectList Select_Class()
-        {
-            return new SelectList(_context.ClassET, Default.ID, Default.ClassName);
-        }
-        public SelectList Select_School()
-        {
-            return new SelectList(_context.SchoolET, Default.ID, Default.SchoolName);
         }
         #endregion
     }

@@ -26,20 +26,20 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(string search)
         {
-            UserInfo user = await getUserET();
+            if (!string.IsNullOrEmpty(search))
+            {
+                var facultSearch = from facult in _context.FacultET select facult;
+                facultSearch = facultSearch.Where(x => x.Schools.Name.Contains(search));
+                return View(await facultSearch.Include(f => f.Schools).OrderBy(m => m.Name).ToListAsync());
+            }
             bool isAdmin = await IsAdmin();
             if (!isAdmin)
             {
+                UserInfo user = await getUserET();
                 var facultDB = _context.FacultET.Include(f => f.Schools).Where(m => m.SchoolID == user.SchoolID).OrderBy(m => m.Name);
                 return View(await facultDB.ToListAsync());
             }
             ViewBag.isAdmin = "Admin";
-            var facultSearch = from facult in _context.FacultET select facult;
-            if (!string.IsNullOrEmpty(search))
-            {
-                facultSearch = facultSearch.Where(x => x.Schools.Name.Contains(search));
-                return View(await facultSearch.Include(f => f.Schools).OrderBy(m => m.Name).ToListAsync());
-            }
             return View(await _context.FacultET.Include(f => f.Schools).OrderBy(m => m.Name).ToListAsync());
         }
 
@@ -51,10 +51,10 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            UserInfo user = await getUserET();
             bool isAdmin = await IsAdmin();
             if (!isAdmin)
             {
+                UserInfo user = await getUserET();
                 ViewData["SchoolID"] = new SelectList(_context.SchoolET.Where(m => m.ID == user.SchoolID), Default.ID, Default.SchoolName);
                 return View();
             }
@@ -94,12 +94,11 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             /* Lấy thông tin Khoa theo ID */
             var facultDB = await _context.FacultET.FindAsync(id);
 
-            UserInfo user = await getUserET();
             bool isAdmin = await IsAdmin();
             if (!isAdmin)
             {
-                ViewData["SchoolID"] = new SelectList(_context.SchoolET
-                    .Where(m => m.ID == user.SchoolID), Default.ID, Default.SchoolName, facultDB.SchoolID);
+                UserInfo user = await getUserET();
+                ViewData["SchoolID"] = new SelectList(_context.SchoolET.Where(m => m.ID == user.SchoolID), Default.ID, Default.SchoolName, facultDB.SchoolID);
                 return View(facultDB);
             }
             ViewData["SchoolID"] = new SelectList(_context.SchoolET, Default.ID, Default.SchoolName, facultDB.SchoolID);

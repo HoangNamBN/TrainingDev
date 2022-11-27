@@ -65,7 +65,7 @@
                     <label asp-for="FacultID" class="control-label"></label>
                     <div class="col-md-10">
                         <select id="ddlFacult" asp-for="FacultID" class="form-control" asp-items="ViewBag.FacultID">
-                            <option>Chọn Khoa theo học</option>
+                            <option>Chọn Khoa</option>
                         </select>
                         <span class="text-danger" asp-validation-for="FacultID"></span>
                     </div>
@@ -74,7 +74,7 @@
                     <label asp-for="ClassID" class="control-label"></label>
                     <div class="col-md-10">
                         <select id="ddlClass" asp-for="ClassID" class="form-control" asp-items="ViewBag.ClassID">
-                            <option>Chọn lớp theo học</option>
+                            <option>Chọn lớp học</option>
                         </select>
                         <span class="text-danger" asp-validation-for="ClassID"></span>
                     </div>
@@ -122,6 +122,7 @@
     <partial name="_ValidationScriptsPartial" />
     <script type="text/javascript">
         $(document).ready(function(){
+            /* đăng ký sự kiện change cho control có id là ddlSchool*/
             $('#ddlSchool').change(function(){
                 var sltSchool = $('#ddlSchool').val();
                 var sltFacult = $('#ddlFacult');
@@ -131,6 +132,10 @@
                 {
                     $.getJSON('@Url.Action("GetFacult")', { SchoolID: sltSchool}, function(facultJson){
                         if (facultJson != null && !jQuery.isEmptyObject(facultJson)) {
+                            sltFacult.append($('<option>', {
+                                value: null,
+                                text: "Selection Facult"
+                            }));
                             $.each(facultJson, function(a, b){
                                 sltFacult.append($('<option>', {
                                     value: b.value,
@@ -142,13 +147,18 @@
                 }
             })
             $('#ddlFacult').change(function () {
+                var sltSchool = $('#ddlSchool').val();
                 var sltFacult = $('#ddlFacult').val();
                 var sltClass = $('#ddlClass');
                 sltClass.empty();
 
-                if (sltFacult != null && sltFacult != "") {
-                    $.getJSON('@Url.Action("GetClass")', { FacultID: sltFacult }, function (classJson) {
-                        if (classJson != null && !jQuery.isEmptyObject(classJson)) {
+                if (sltFacult != null && sltSchool != "") {
+                    $.getJSON('@Url.Action("GetClass")', {SchoolID : sltSchool,FacultID: sltFacult }, function (classJson) {
+                        if (classJson != null) {
+                            sltClass.append($('<option>', {
+                                    value: null,
+                                    text: "Select Class"
+                                }));
                             $.each(classJson, function (a, b) {
                                 sltClass.append($('<option>', {
                                     value: b.value,

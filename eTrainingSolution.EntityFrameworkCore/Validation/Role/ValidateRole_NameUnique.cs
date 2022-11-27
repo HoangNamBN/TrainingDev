@@ -6,15 +6,17 @@ namespace eTrainingSolution.EntityFrameworkCore.Validation.Role
     {
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
+            if (value == null)
+            {
+                return new ValidationResult("Bạn cần chọn quyền muốn sửa");
+            }
             var _dbContext = (DB_Context)validationContext?.GetService(typeof(DB_Context));
 
-            var checkRoleExists = _dbContext.Roles?.ToList();
-            foreach (var i in checkRoleExists)
+            var isRole = _dbContext.Roles?.Where(m => m.Name.ToUpper().Contains(value.ToString().ToUpper()));
+
+            if (isRole.Count() != 0)
             {
-                if (i.Name.ToUpper() == value.ToString().ToUpper())
-                {
-                    return new ValidationResult("Vai trò này đã tồn tại");
-                }
+                return new ValidationResult("Vai trò này đã tồn tại");
             }
             return ValidationResult.Success;
         }

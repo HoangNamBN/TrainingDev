@@ -70,10 +70,6 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                 {
                     UserName = userName,
                     Email = model.Email,
-                    SchoolID = model.SchoolID,
-                    FacultID = model.FacultID,
-                    ClassID = model.ClassID,
-                    RoleName = model.RoleName
                 };
 
                 /* trả về đối tượng resultIdentity */
@@ -83,14 +79,20 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                     /* Chưa có ai đăng ký => gán quyền Admin */
                     if (model.SchoolID == null)
                     {
-                        /* Khi chưa có Admin nên chưa tồn tại quyền nào thì tạo ra quyền Admin rồi gán cho user hiện tại */
                         await _roleManager.CreateAsync(new IdentityRole(RoleType.Admin));
                         user.RoleName = RoleType.Admin;
                         await _userManager.AddToRoleAsync(user, RoleType.Admin);
                     }
-                    user.SchoolID = model.SchoolID;
-                    user.FacultID = model.FacultID;
-                    user.ClassID = model.ClassID;
+                    else
+                    {
+                        user.SchoolID = model.SchoolID;
+                        user.FacultID = model.FacultID;
+                        user.ClassID = model.ClassID;
+                        await _roleManager.CreateAsync(new IdentityRole(RoleType.Member));
+                        user.RoleName = RoleType.Member;
+                        await _userManager.AddToRoleAsync(user, RoleType.Member);
+                    }
+
                     /* Yêu cầu xác thực tài khoản: Giá trị RequireConfirmedAccount = false mặc định */
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
@@ -178,14 +180,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                 /* lấy tên user */
                 var userName = model.Email.Substring(0, model.Email.LastIndexOf('@'));
                 /* lockoutOnFailure: true kích hoạt khóa tài khoản khi nhập sai quá số lần */
-                var result = await _signInManager.PasswordSignInAsync(userName, model.Password,
-                    model.RememberMe, lockoutOnFailure: true);
-
-                /* Nhập sai quá 3 lần thì chuyển đến Lockout */
-                if (result.IsLockedOut)
-                {
-                    return View("Lockout");
-                }
+                var result = await _signInManager.PasswordSignInAsync(userName, model.Password, model.RememberMe, lockoutOnFailure: true);
 
                 /* Login không thành công*/
                 if (!result.Succeeded)
@@ -197,10 +192,9 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                         result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
                     }
                 }
-                if (result.Succeeded)
-                {
-                    return Redirect(returnUrl);
-                }
+                /* Nhập sai quá 3 lần thì chuyển đến Lockout */
+                if (result.IsLockedOut) return View("Lockout");
+                if (result.Succeeded) return Redirect(returnUrl);
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Đăng nhập không thành công");
@@ -241,14 +235,14 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 
         }
         #endregion
+
         #region Trả về kết quả lọc dữ liệu select
         public ActionResult GetFacult(string SchoolID)
         {
             if (!string.IsNullOrEmpty(SchoolID))
             {
                 List<SelectListItem> facultJson = _context.FacultET
-                    .Where(c => c.SchoolID.ToString() == SchoolID)
-                    .OrderBy(m => m.Name)
+                    .Where(c => c.SchoolID.ToString() == SchoolID).OrderBy(m => m.Name)
                     .Select(n => new SelectListItem
                     {
                         Value = n.ID.ToString(),
@@ -259,13 +253,12 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             return null;
         }
 
-        public ActionResult GetClass(string FacultID)
+        public ActionResult GetClass(string SchoolID, string FacultID)
         {
-            if (!string.IsNullOrEmpty(FacultID))
+            if (!string.IsNullOrEmpty(FacultID) && !string.IsNullOrEmpty(SchoolID))
             {
                 List<SelectListItem> classJson = _context.ClassET
-                    .Where(c => c.FacultID.ToString() == FacultID)
-                    .OrderBy(m => m.Name)
+                    .Where(c => (c.FacultID.ToString() == FacultID && c.SchoolID.ToString() == SchoolID)).OrderBy(m => m.Name)
                     .Select(n => new SelectListItem
                     {
                         Value = n.ID.ToString(),
