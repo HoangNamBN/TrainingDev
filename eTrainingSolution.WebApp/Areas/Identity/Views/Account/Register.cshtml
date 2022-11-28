@@ -121,25 +121,33 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script type="text/javascript">
+        // sử dụng $(document).ready để chắc chắn rằng sau khi Dom load xong hết thì jquery sẽ được gọi đến
         $(document).ready(function(){
             /* đăng ký sự kiện change cho control có id là ddlSchool*/
             $('#ddlSchool').change(function(){
-                var sltSchool = $('#ddlSchool').val();
+                var sltSchool = $('#ddlSchool').val(); /* Lấy ra giá trị mã trường */
                 var sltFacult = $('#ddlFacult');
                 sltFacult.empty();
 
                 if(sltSchool != null && sltSchool !="")
                 {
+                    // .getJSON được truyền vào với 3 giá trị là url, data, success
+                    /*
+                        Url sẽ chỉ định đến url sẽ được gửi đến máy chủ
+                        data sẽ là chỉ định dữ liệu sẽ được gửi đến máy chủ là mã trường
+                        function(facultJson): hàm này sẽ được hiểu là hàm callback nó sẽ được thực thi sau khi thực hiện sự kiện change
+                    */
                     $.getJSON('@Url.Action("GetFacult")', { SchoolID: sltSchool}, function(facultJson){
                         if (facultJson != null && !jQuery.isEmptyObject(facultJson)) {
+                            // Luôn thêm một option để ví dụ trong trường hợp Trường đó chưa tạo Khoa thì sẽ không gây ra lỗi
                             sltFacult.append($('<option>', {
                                 value: null,
                                 text: "Selection Facult"
                             }));
-                            $.each(facultJson, function(a, b){
+                            $.each(facultJson, function(key, value){
                                 sltFacult.append($('<option>', {
-                                    value: b.value,
-                                    text: b.text
+                                    value: value.value,
+                                    text: value.text
                                 }));
                             });
                         };
@@ -159,10 +167,10 @@
                                     value: null,
                                     text: "Select Class"
                                 }));
-                            $.each(classJson, function (a, b) {
+                            $.each(classJson, function (key, value) {
                                 sltClass.append($('<option>', {
-                                    value: b.value,
-                                    text: b.text
+                                    value: value.value,
+                                    text: value.text
                                 }));
                             });
                         };
