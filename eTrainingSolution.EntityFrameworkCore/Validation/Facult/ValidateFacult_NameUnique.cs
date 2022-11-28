@@ -9,26 +9,24 @@ namespace eTrainingSolution.EntityFrameworkCore.Validation.Faculties
         {
             var facultDB = (Facult)validationContext.ObjectInstance;
 
-            var _dbContext = (DB_Context)validationContext?.GetService(typeof(DB_Context));
+            var _dbContext = validationContext?.GetService(typeof(DB_Context)) as DB_Context;
 
-            var schoolDB = _dbContext.SchoolET?.ToList();
-
-            foreach (var itemSchool in schoolDB)
+            /* Trường hợp đăng ký một Khoa */
+            if(facultDB.ID.ToString() == "00000000-0000-0000-0000-000000000000")
             {
-                if (itemSchool.ID == facultDB.SchoolID)
+                /* lấy ra danh sách các Khoa theo ID*/
+                var lstFacult = _dbContext.FacultET.Where(m => (m.Name.ToUpper().Contains(value.ToString().ToUpper()) && m.SchoolID == facultDB.SchoolID)).ToList();
+                if(lstFacult.Count > 0 )
                 {
-                    var facultDbContext = _dbContext.FacultET.Where(m => m.SchoolID == itemSchool.ID).ToList();
-                    foreach (var item in facultDbContext)
-                    {
-                        if (item.ID != facultDB.ID && facultDB.ID != null)
-                        {
-                            if (value.ToString().ToUpper() == item.Name.ToUpper())
-                            {
-                                return new ValidationResult("Trường " + itemSchool.Name + " đã tồn tại khoa " + item.Name);
-                            }
-                        }
-                    }
+                    return new ValidationResult("Đã tồn tại");
                 }
+                return ValidationResult.Success;
+            }
+            var lstfacultDb = _dbContext.FacultET.Where(
+                            m => (m.SchoolID == facultDB.ID && m.ID != facultDB.ID && m.Name.ToUpper().Contains(value.ToString().ToUpper()))).ToList();
+            if(lstfacultDb.Count > 0)
+            {
+                return new ValidationResult("Đã tồn tại Khoa");
             }
             return ValidationResult.Success;
         }

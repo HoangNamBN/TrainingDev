@@ -179,6 +179,12 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         {
             if (!string.IsNullOrEmpty(id.ToString()))
             {
+                /* Lấy danh sách user đăng ký thuộc lớp có mã class */
+                var lstUser = await _context.UserET.Where(m => m.ClassID == id).ToListAsync();
+                if(lstUser.Count > 0)
+                {
+                    _context.UserET.RemoveRange(lstUser);
+                }
                 var classDB = await _context.ClassET.FindAsync(id);
                 _context.ClassET.Remove(classDB);
                 await _context.SaveChangesAsync();
@@ -190,7 +196,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         #endregion
 
         #region Lấy ra danh sách Khoa trả về Jon
-        public ActionResult GetFacult(string SchoolID)
+        public ActionResult? GetFacult(string SchoolID)
         {
             if (!string.IsNullOrEmpty(SchoolID))
             {

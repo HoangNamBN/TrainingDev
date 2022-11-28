@@ -101,7 +101,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                 ViewData["SchoolID"] = new SelectList(_context.SchoolET.Where(m => m.ID == user.SchoolID), Default.ID, Default.SchoolName, facultDB.SchoolID);
                 return View(facultDB);
             }
-            ViewData["SchoolID"] = new SelectList(_context.SchoolET, Default.ID, Default.SchoolName, facultDB.SchoolID);
+            ViewData["SchoolID"] = new SelectList(_context.SchoolET.Where(m => m.ID == facultDB.SchoolID), Default.ID, Default.SchoolName, facultDB.SchoolID);
             return View(facultDB);
         }
 
@@ -143,15 +143,21 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         {
             if (!string.IsNullOrEmpty(id.ToString()))
             {
+                /* Lấy danh sách user thuộc Khoa */
+                var lstUser = await _context.UserET?.Where(m => m.FacultID == id).ToListAsync();
+                if(lstUser.Count > 0)
+                {
+                     _context.RemoveRange(lstUser);
+                }
+                /* Lấy danh sách lớp thuộc trường */
+                var lstClass = await _context.ClassET.Where(m => m.FacultID == id).ToListAsync();
+                if (lstClass.Count > 0)
+                {
+                    _context.RemoveRange(lstClass);
+                }
                 /* lấy Khoa muốn xóa */
                 var facultDB = await _context.FacultET.FindAsync(id);
 
-                /* lấy ra danh sách class theo mã Khoa*/
-                var classDB = await _context.ClassET.Where(m => m.FacultID == id).ToListAsync();
-                if (classDB != null)
-                {
-                    _context.ClassET.RemoveRange(classDB);
-                }
                 _context.FacultET.Remove(facultDB);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

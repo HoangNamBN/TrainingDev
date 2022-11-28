@@ -15,7 +15,7 @@ namespace eTrainingSolution.EntityFrameworkCore.Validation.Faculties
         {
             var facultDB = (Facult)validationContext.ObjectInstance;
 
-            var _dbContext = (DB_Context)validationContext?.GetService(typeof(DB_Context));
+            var _dbContext = validationContext?.GetService(typeof(DB_Context)) as DB_Context;
 
             /* Lấy sức chứa của trường theo mã ID*/
             var capacitySchool = _dbContext.SchoolET?.FirstOrDefault(m => m.ID == facultDB.SchoolID)?.Capacity;

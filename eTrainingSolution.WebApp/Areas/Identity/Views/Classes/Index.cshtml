@@ -30,8 +30,8 @@
                     <th>@Html.DisplayNameFor(model => model.Capacity)</th>
                     <th>@Html.DisplayNameFor(model => model.CreateDate)</th>
                     <th>@Html.DisplayNameFor(model => model.CreatedBy)</th>
-                    <th>Khoa</th>
                     <th>Trường</th>
+                    <th>Khoa</th>
                     <th>Chức năng khác</th>
                 </tr>
             </thead>
@@ -44,8 +44,8 @@
                         <td class="text-center">@Html.DisplayFor(ModelItem => item.Capacity)</td>
                         <td class="text-center">@Html.DisplayFor(ModelItem => item.CreateDate)</td>
                         <td>@Html.DisplayFor(ModelItem => item.CreatedBy)</td>
-                        <td>@Html.DisplayFor(ModelItem => item.Facults.Name)</td>
                         <td>@Html.DisplayFor(ModelItem => item.Schools.Name)</td>
+                        <td>@Html.DisplayFor(ModelItem => item.Facults.Name)</td>
                         <td class="text-center">
                             <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.ID">Sửa</a>
                             <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.ID">Xóa</a>
@@ -65,8 +65,8 @@
                     <th>@Html.DisplayNameFor(model => model.Capacity)</th>
                     <th>@Html.DisplayNameFor(model => model.CreateDate)</th>
                     <th>@Html.DisplayNameFor(model => model.CreatedBy)</th>
-                    <th>Khoa</th>
                     <th>Trường</th>
+                    <th>Khoa</th>
                 </tr>
             </thead>
         </table>

@@ -123,34 +123,34 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid? id)
         {
-            if (id == null) return NotFound();
+            if (id == null) 
+            {
+                return NotFound();
+            }
+            /* Lấy danh sách User thuộc trường đó */
+            var lstUser = await _context.UserET.Where(m => m.SchoolID == id).ToListAsync();
+            if(lstUser.Count > 0)
+            {
+                _context.RemoveRange(lstUser);
+            }
+
+            /* Lấy danh sách lớp thuộc trường đó */
+            var lstClass = await _context.ClassET.Where(m => m.SchoolID == id).ToListAsync();
+            if (lstClass.Count > 0)
+            {
+                _context.RemoveRange(lstClass);
+            }
+
+            /* Lấy danh sách Khoa thuộc trường đó */
+            var lstFacult = await _context.FacultET.Where(m => m.SchoolID == id).ToListAsync();
+            if (lstFacult.Count > 0)
+            {
+                _context.RemoveRange(lstFacult);
+            }
+
             // tìm kiếm thông tin trường học theo id
             var schoolDB = await _context.SchoolET.FindAsync(id);
-            if (schoolDB != null)
-            {
-                // lấy ra danh sách các Khoa theo id trường học
-                var facultDB = await _context.FacultET.Where(m => m.SchoolID == id).ToListAsync();
-                if (facultDB != null)
-                {
-                    // Duyệt Khoa để lấy ra thông tin của lớp học
-                    foreach (var f in facultDB)
-                    {
-                        // lấy ra danh sách lớp của Khoa
-                        var classDB = await _context.ClassET.Where(m => m.FacultID == f.ID).ToListAsync();
-                        if (classDB != null)
-                        {
-                            var userDb = await _context.UserET.Where(m => m.SchoolID == id).ToListAsync();
-                            _context.RemoveRange(classDB);
-                            if (userDb != null)
-                            {
-                                _context.RemoveRange(userDb);
-                            }
-                        }
-                        _context.Remove(f);
-                    }
-                }
-                _context.Remove(schoolDB);
-            }
+            _context.Remove(schoolDB);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

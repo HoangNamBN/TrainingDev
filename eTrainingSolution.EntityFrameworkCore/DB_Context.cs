@@ -42,7 +42,9 @@ namespace eTrainingSolution.EntityFrameworkCore
                 var tableName = entityType.GetTableName();
                 // kiểm tra xem nếu tên table bắt đầu bằng AspNet thì set lại tên cho table bằng cách cắt chuỗi từ kí tự ở vị trí 0 đến 6
                 if (tableName.StartsWith("AspNet"))
+                {
                     entityType.SetTableName(tableName.Substring(6));
+                }
             }
         }
 

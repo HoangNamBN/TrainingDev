@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using eTrainingSolution.EntityFrameworkCore.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace eTrainingSolution.EntityFrameworkCore.Validation.Account
 {
@@ -12,10 +13,10 @@ namespace eTrainingSolution.EntityFrameworkCore.Validation.Account
         /// <returns></returns>
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            var _DbContext = (DB_Context)validationContext?.GetService(typeof(DB_Context));
+            var _DbContext = validationContext?.GetService(typeof(DB_Context)) as DB_Context;
 
             /* lấy ra user tồn tại Email có giá trị value */
-            var isEmailExists = _DbContext.Users?.Where(m => m.Email.Contains((string)value));
+            var isEmailExists = _DbContext.UserET?.Where(m => m.Email.Contains(value.ToString()));
 
             if (isEmailExists.Count() > 0)
             {

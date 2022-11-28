@@ -5,6 +5,7 @@ using eTrainingSolution.WebApp.Areas.Identity.Models.Role;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 {
@@ -29,7 +30,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         [Authorize(Roles = RoleType.Admin)]
         public async Task<IActionResult> Index()
         {
-            var data = _roleManager.Roles.OrderBy(data => data.Name).ToList();
+            var data = await _roleManager.Roles.OrderBy(data => data.Name).ToListAsync();
             return View(data);
         }
 

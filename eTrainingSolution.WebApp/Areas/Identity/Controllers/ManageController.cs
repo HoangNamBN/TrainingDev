@@ -31,7 +31,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 
         #region Load thông tin user vào model
 
-        public async Task LoadAsync(UserInfo user, bool isUpdate = false)
+        public void Load(UserInfo user, bool isUpdate = false)
         {
             if (isUpdate == true)
             {
@@ -72,11 +72,8 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             {
                 return NotFound(Default.NotificationRole);
             }
-            if (isUpdate == true)
-            {
-                await LoadAsync(user, true);
-            }
-            else await LoadAsync(user, false);
+            if (isUpdate == true) Load(user, true);
+            else Load(user, false);
 
             return View(profileModel);
         }
@@ -97,7 +94,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             }
             if (!ModelState.IsValid)
             {
-                await LoadAsync(user);
+                Load(user);
                 return RedirectToAction(nameof(Index));
             }
 

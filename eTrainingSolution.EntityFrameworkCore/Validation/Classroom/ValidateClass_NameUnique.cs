@@ -8,7 +8,7 @@ namespace eTrainingSolution.EntityFrameworkCore.Validation.Classes
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
             var classDB = (Classroom)validationContext.ObjectInstance;
-            var _dbContext = (DB_Context)validationContext?.GetService(typeof(DB_Context));
+            var _dbContext = validationContext?.GetService(typeof(DB_Context)) as DB_Context;
 
             /* Trường hợp tạo mới */
             if (classDB.ID == null)
@@ -23,16 +23,11 @@ namespace eTrainingSolution.EntityFrameworkCore.Validation.Classes
                 return ValidationResult.Success;
 
             }
-            var lstClassDb = _dbContext.ClassET?.Where(m => m.SchoolID == classDB.SchoolID).ToList();
-            foreach (var classDb in lstClassDb)
+            /* Danh sách tồn tại tên được thay đổi và không phải chính nó*/
+            var lstClassDb = _dbContext.ClassET?.Where(m => (m.SchoolID == classDB.SchoolID && m.Name.ToUpper().Contains(value.ToString().ToUpper()) && m.ID != classDB.ID)).ToList();
+            if(lstClassDb.Count > 0)
             {
-                if (classDb.ID != classDB.ID)
-                {
-                    if (value.ToString().ToUpper() == classDb.Name.ToUpper())
-                    {
-                        return new ValidationResult("Đã tồn tại");
-                    }
-                }
+                return new ValidationResult("Đã tồn tại");
             }
             return ValidationResult.Success;
         }

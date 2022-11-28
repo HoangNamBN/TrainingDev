@@ -9,7 +9,7 @@ namespace eTrainingSolution.EntityFrameworkCore.Validation.Classes
         {
             var classDb = (Classroom)validationContext.ObjectInstance;
 
-            var _dbContext = (DB_Context)validationContext?.GetService(typeof(DB_Context));
+            var _dbContext = validationContext?.GetService(typeof(DB_Context)) as DB_Context;
 
             /* Lấy ngày thành lập của Khoa */
             var createDateFacult = _dbContext.FacultET?.FirstOrDefault(m => m.ID == classDb.FacultID)?.CreateDate;

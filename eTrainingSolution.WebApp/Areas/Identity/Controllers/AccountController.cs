@@ -33,7 +33,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> RegisterAsync(string? returnUrl = null)
+        public IActionResult Register(string? returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
             ViewData["ReturnUrl"] = returnUrl;
@@ -70,6 +70,9 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                 {
                     UserName = userName,
                     Email = model.Email,
+                    SchoolID = model.SchoolID,
+                    FacultID = model.FacultID,
+                    ClassID = model.ClassID
                 };
 
                 /* trả về đối tượng resultIdentity */
@@ -85,14 +88,10 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
                     }
                     else
                     {
-                        user.SchoolID = model.SchoolID;
-                        user.FacultID = model.FacultID;
-                        user.ClassID = model.ClassID;
                         await _roleManager.CreateAsync(new IdentityRole(RoleType.Member));
                         user.RoleName = RoleType.Member;
                         await _userManager.AddToRoleAsync(user, RoleType.Member);
                     }
-
                     /* Yêu cầu xác thực tài khoản: Giá trị RequireConfirmedAccount = false mặc định */
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
@@ -237,7 +236,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         #endregion
 
         #region Trả về kết quả lọc dữ liệu select
-        public ActionResult GetFacult(string SchoolID)
+        public ActionResult? GetFacult(string SchoolID)
         {
             if (!string.IsNullOrEmpty(SchoolID))
             {
@@ -253,7 +252,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             return null;
         }
 
-        public ActionResult GetClass(string SchoolID, string FacultID)
+        public ActionResult? GetClass(string SchoolID, string FacultID)
         {
             if (!string.IsNullOrEmpty(FacultID) && !string.IsNullOrEmpty(SchoolID))
             {
