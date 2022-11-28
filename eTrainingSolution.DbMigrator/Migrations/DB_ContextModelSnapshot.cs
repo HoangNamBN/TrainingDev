@@ -308,6 +308,9 @@ namespace eTrainingSolution.DbMigrator.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("ImageName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool?>("IsDelete")
                         .HasColumnType("bit");
 

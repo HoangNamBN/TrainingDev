@@ -5,6 +5,8 @@ using eTrainingSolution.WebApp.Areas.Identity.Models.Account.Manage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.IO;
+using System.Net.WebSockets;
 
 namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 {
@@ -12,10 +14,12 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
     [Route("/Manage/[action]")]
     public class ManageController : PublicController
     {
+        private readonly IWebHostEnvironment _hostEnvironment;
         #region Khai báo các dịch vụ cần sử dụng
-        public ManageController(SignInManager<UserInfo> signInManager, UserManager<UserInfo> userManager, DB_Context context, RoleManager<IdentityRole> roleManager)
+        public ManageController(SignInManager<UserInfo> signInManager, UserManager<UserInfo> userManager, DB_Context context, RoleManager<IdentityRole> roleManager, IWebHostEnvironment hostEnvironment)
             : base(signInManager, userManager, context, roleManager)
         {
+            _hostEnvironment = hostEnvironment;
         }
         #endregion
 
@@ -33,28 +37,30 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 
         public void Load(UserInfo user, bool isUpdate = false)
         {
+            string path = "./wwwroot/images/" + user.ImageName;
+            profileModel = new ProfileModel
+            {
+                UserName = user.UserName,
+                Phone = user.PhoneNumber,
+                Birthday = user.DateOfBirth,
+                Address = user.Address,
+                FullName = user.FullName,
+                FileName = user.ImageName
+            };
             if (isUpdate == true)
             {
-                profileModel = new ProfileModel
-                {
-                    UserName = user.UserName,
-                    Phone = user.PhoneNumber,
-                    Birthday = user.DateOfBirth,
-                    Address = user.Address,
-                    FullName = user.FullName,
-                    StatusMessage = "Bạn đã cập nhật thành công"
-                };
+                profileModel.StatusMessage = "Bạn đã cập nhật thành công";
+            }
+            if (!System.IO.File.Exists(path))
+            {
+                profileModel.FileUpload = null;
             }
             else
             {
-                profileModel = new ProfileModel
+                using (var stream = System.IO.File.OpenRead(path))
                 {
-                    UserName = user.UserName,
-                    Phone = user.PhoneNumber,
-                    Birthday = user.DateOfBirth,
-                    Address = user.Address,
-                    FullName = user.FullName,
-                };
+                    profileModel.FileUpload = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(stream.Name));
+                }
             }
         }
 
@@ -63,6 +69,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         #region Index
         [HttpGet]
         [Authorize]
+        /* Hiển thị các thông tin User đã đăng ký */
         public async Task<IActionResult> Index(bool isUpdate = false)
         {
             // lấy thông tin user đang đăng nhập
@@ -84,7 +91,6 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         public async Task<IActionResult> Update(ProfileModel profileModel)
         {
             bool checkUpdate = false;
-
             // lấy thông tin user đang đăng nhập
             var user = await _userManager.GetUserAsync(User);
 
@@ -114,7 +120,14 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             user.FullName = profileModel.FullName;
             user.PhoneNumber = profileModel.Phone;
             user.DateOfBirth = profileModel.Birthday;
-
+            /* Upload file to folder */
+            using(var stream = new FileStream(Path.Combine(_hostEnvironment.WebRootPath, "images", profileModel.FileUpload.FileName), FileMode.Create))
+            {
+                await profileModel.FileUpload.CopyToAsync(stream);
+            }
+            /* Lưu ảnh vào DB */
+            user.ImageName = profileModel.FileUpload.FileName;
+            await _context.SaveChangesAsync();
             await _userManager.UpdateAsync(user);
             checkUpdate = true;
             // đăng nhập lại để làm mới Cookie => không nhớ thông tin cũ

@@ -12,7 +12,7 @@ using eTrainingSolution.EntityFrameworkCore;
 namespace eTrainingSolution.DbMigrator.Migrations
 {
     [DbContext(typeof(DB_Context))]
-    [Migration("20221128011631_v0")]
+    [Migration("20221128074427_v0")]
     partial class v0
     {
         /// <inheritdoc />
@@ -310,6 +310,9 @@ namespace eTrainingSolution.DbMigrator.Migrations
                     b.Property<string>("FullName")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ImageName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("IsDelete")
                         .HasColumnType("bit");

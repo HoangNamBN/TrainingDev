@@ -29,14 +29,15 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Models.Account.Manage
         //[ModelBinder(BinderType =typeof(ConvertDateTime))]
         public DateTime? Birthday { get; set; }
 
-        ///// <summary>
-        ///// File dùng để Upload thông tin
-        ///// </summary>
-        //[Display(Name = "Ảnh cá nhân")]
-        //[Required(ErrorMessage = "File ảnh user không được để trống")]
-        //[DataType(DataType.Upload)]
+        /// <summary>
+        /// File dùng để Upload thông tin
+        /// </summary>
+        [Display(Name = "Ảnh cá nhân")]
+        [Required(ErrorMessage = "File ảnh user không được để trống")]
+        [DataType(DataType.Upload)]
         //[FileExtensions(Extensions = "png, jpg, jpeg, gif")]
-        //public IFormFile? FileUpload { get; set; }
+        public IFormFile? FileUpload { get; set; }
+        public string? FileName { get; set; }
 
         [TempData]
         public string? StatusMessage { get; set; }

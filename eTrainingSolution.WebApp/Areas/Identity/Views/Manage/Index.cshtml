@@ -18,7 +18,7 @@
 
 <div class="row">
     <div class="col-md-6">
-        <form asp-action="Index" asp-controller="Manage" method="post">
+        <form asp-action="Index" asp-controller="Manage" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label asp-for="UserName"></label>
                 <input asp-for="UserName" class="form-control" disabled/>
@@ -43,11 +43,18 @@
                 <input asp-for="Birthday" name="Birthday" class="form-control" type="date" />
                 <span asp-validation-for="Birthday" class="text-danger"></span>
             </div>
-@*             <div class="form-group">
-                <label asp-for="FileUpload"></label>
-                <input asp-for="FileUpload" name="FileUpload" class="form-control" type="file" id="file" />
-                <span asp-validation-for="FileUpload" class="text-danger"></span>
-            </div>*@
+             <div class="form-group">
+                <label asp-for="@Model.FileUpload"></label>
+                <input asp-for="FileUpload" name="FileUpload" class="form-control" type="file" id="file" width="50%" />
+                @{
+                    if (@Model.FileUpload != null)
+                    {
+                        <p></p>
+                        <img src="/images/@Model.FileUpload.FileName" alt="Image" width="150" height="150" />
+                    }
+                }
+                <span asp-validation-for="@Model.FileUpload" class="text-danger"></span>
+            </div>
             <p></p>
             <button asp-action="Update" type="submit" class="btn btn-primary btn-sm">Lưu hồ sơ</button>
         </form>

@@ -123,6 +123,7 @@ namespace eTrainingSolution.DbMigrator.Migrations
                     CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     ConfirmPassword = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     RoleName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ImageName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ClassID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ClassroomsID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     FacultID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),

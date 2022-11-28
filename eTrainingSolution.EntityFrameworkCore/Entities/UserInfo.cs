@@ -69,6 +69,8 @@ namespace eTrainingSolution.EntityFrameworkCore.Entities
         /// </summary>
         public string? RoleName { get; set; }
 
+        public string? ImageName { get; set; }
+
         /// <summary>
         /// Lớp
         /// </summary>
