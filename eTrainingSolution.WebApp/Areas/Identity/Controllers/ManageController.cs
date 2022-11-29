@@ -5,8 +5,6 @@ using eTrainingSolution.WebApp.Areas.Identity.Models.Account.Manage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using System.Net.WebSockets;
 
 namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
 {
@@ -24,11 +22,7 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
         #endregion
 
         #region Khai báo Model
-
-        //[BindProperty]
         public ProfileModel profileModel { get; set; }
-
-        //[BindProperty]
         public ChangePassModel changePassModel { get; set; }
 
         #endregion
@@ -121,7 +115,8 @@ namespace eTrainingSolution.WebApp.Areas.Identity.Controllers
             user.PhoneNumber = profileModel.Phone;
             user.DateOfBirth = profileModel.Birthday;
             /* Upload file to folder */
-            using(var stream = new FileStream(Path.Combine(_hostEnvironment.WebRootPath, "images", profileModel.FileUpload.FileName), FileMode.Create))
+            using(var stream = new FileStream(Path.Combine(_hostEnvironment.WebRootPath, "images", 
+                                                profileModel.FileUpload.FileName), FileMode.Create))
             {
                 await profileModel.FileUpload.CopyToAsync(stream);
             }
